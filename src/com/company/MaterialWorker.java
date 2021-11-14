@@ -184,29 +184,33 @@ public class MaterialWorker {
             System.out.println("\n=================================\n");
         }
     }
-    public void deleteMaterial() {
-        System.out.println("Enter name to delete material: ");
-        String name_of_object = sc.nextLine();
-        for (Material m :
-                LM) {
-            if (m.getName().equals(name_of_object)) {
-                LM.remove(m);
+    public void deleteMaterial() throws SQLException {
+        try {
+            dbcon.getConnectionToDB();
+            System.out.println("Enter name to delete material: ");
+            String name_of_object = sc.nextLine();
+            Iterator<Material> materialIterator = LM.iterator();
+            while (materialIterator.hasNext()) {
+                Material nextMaterial = materialIterator.next();
+                if (nextMaterial.name.equals(name_of_object)) {
+                    materialIterator.remove();
+                }
             }
+            String sql = String.format("DELETE FROM bishkekstroishop.materials WHERE name = \'%s\';", name_of_object);
+            int rows = dbcon.statement.executeUpdate(sql);
+            System.out.println("Getting record...");
+            System.out.printf("%d rows deleted ", rows);
+            getAllMaterials();
+            dbcon.closeConnections();
         }
-        getAllMaterials();
-    }
-//    public  void materialsDelete() throws SQLException, IOException, ClassNotFoundException {
-//        dbcon.getConnectionToDB();
-//        Scanner scann = new Scanner(System.in);
-//        System.out.println("Enter name to delete material: ");
-//        String namme = scann.nextLine();
-//        String sql = String.format("DELETE FROM bishkekstroishop.materials WHERE name = \'%s\';", namme);
-//        int rows = dbcon.statement.executeUpdate(sql);
-//        System.out.println("Getting record...");
-//        System.out.printf("%d rows deleted ", rows);
-//        dbcon.closeConnections();
 
-    //    }
+        catch (Exception ex) {
+        System.out.println("Connection failed...");
+        ex.printStackTrace();}
+        dbcon.closeConnections();
+
+    }
+
     public void updateMaterials() throws SQLException, IOException, ClassNotFoundException{
         dbcon.getConnectionToDB();
         Scanner sc = new Scanner(System.in);
@@ -221,7 +225,7 @@ public class MaterialWorker {
                 "6)  supliers_name;\n" +
                 "7)  supliers_surname;\n" +
                 "8)  supliers_phone;\n" +
-                "9) supliers_adress;:  ");
+                "9) supliers_adress;");
         String colName_for_updating = sc.nextLine();
         String space = sc.nextLine();
         if (
@@ -328,7 +332,6 @@ public class MaterialWorker {
             System.out.println("Enter new ID: ");
             int idm = sc.nextInt();
             System.out.println("\nEnter Name: ");
-            ;
             String name = sc.next();
             System.out.println();
             System.out.println("Enter Brand: ");

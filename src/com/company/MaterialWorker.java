@@ -54,7 +54,7 @@ public class MaterialWorker {
             this.supliers_adress = supadress;
             this.supIdEqualToMatID = supId;
         }
-
+        //Geters
         public void getInfo() {
             System.out.println(this.id);
             System.out.println(this.name);
@@ -67,58 +67,68 @@ public class MaterialWorker {
             System.out.println(this.supliers_phone);
             System.out.println(this.supliers_adress);
         }
-
         public int getId() {
             return this.id;
         }
-
         public String getName() {
             return this.name;
         }
-
         public String getBrand() {
             return this.brand;
         }
-
         public String getDescription() {
             return this.description;
         }
-
         public int getQuantity() {
             return this.quantity;
         }
-
         public int getPrice() {
             return this.price;
         }
-
         public String getSupliersName() {
             return this.supliers_name;
         }
-
         public String getSupliersSurname() {
             return this.supliers_surname;
         }
-
         public String getSupliersPhone() {
             return this.supliers_phone;
         }
-
         public String getSupliersAdress() {
             return this.supliers_adress;
         }
-
         public int getSupIdEqualToMatID() {
             return this.supIdEqualToMatID;
         }
-
+        //Seters
         public  void setName(String name){
             this.name=name;
         }
-
         public void setQuantity(int quantity){
             this.quantity = quantity;
         }
+        public void setBrand(String brand) {
+            this.brand = brand;
+        }
+        public void setDescription(String description) {
+            this.description = description;
+        }
+        public void setPrice(int price) {
+            this.price = price;
+        }
+        public void setSupliers_name(String supliers_name) {
+            this.supliers_name = supliers_name;
+        }
+        public void setSupliers_surname(String supliers_surname) {
+            this.supliers_surname = supliers_surname;
+        }
+        public void setSupliers_phone(String supliers_phone) {
+            this.supliers_phone = supliers_phone;
+        }
+        public void setSupliers_adress(String supliers_adress) {
+            this.supliers_adress = supliers_adress;
+        }
+
     }
 
     Scanner sc = new Scanner(System.in);
@@ -127,7 +137,6 @@ public class MaterialWorker {
         Material material = new Material(Mid, Mname, Mbrand, Mdesc, Mquan, Mprice, Msupn, Msups, Msupp, Msupa, supId);
         LM.add(material);
     }
-
     public void createAllMaterials() throws SQLException, IOException, ClassNotFoundException {
         //All materials
         try {
@@ -162,7 +171,6 @@ public class MaterialWorker {
         }
 
     }
-
     public void getAllMaterials() {
         for (Material m : LM) {
             System.out.println("ID: " + m.getId());
@@ -178,7 +186,6 @@ public class MaterialWorker {
             System.out.println("\n=================================\n");
         }
     }
-
     public void deleteMaterial() {
         System.out.println("Enter name to delete material: ");
         String name_of_object = sc.nextLine();
@@ -202,42 +209,79 @@ public class MaterialWorker {
 //        dbcon.closeConnections();
 
     //    }
-    public void updateMaterials() throws SQLException, IOException, ClassNotFoundException {
+    public void updateMaterials() throws SQLException, IOException, ClassNotFoundException{
         dbcon.getConnectionToDB();
         Scanner sc = new Scanner(System.in);
         System.out.print("\n Enter name of updating material: ");
         String name_of_updating_material = sc.nextLine();
-
         System.out.print("\n Enter the column name to update\n" +
-                "1)  id;\n" +
-                "2)  name;\n" +
-                "3)  brand;\n" +
-                "4)  description;\n" +
-                "5)  quantity;\n" +
-                "6)  price;\n" +
-                "7)  supliers_name;\n" +
-                "8)  supliers_surname;\n" +
-                "9)  supliers_phone;\n" +
-                "10) supliers_adress;:  ");
+                "1)  name;\n" +
+                "2)  brand;\n" +
+                "3)  description;\n" +
+                "4)  quantity;\n" +
+                "5)  price;\n" +
+                "6)  supliers_name;\n" +
+                "7)  supliers_surname;\n" +
+                "8)  supliers_phone;\n" +
+                "9) supliers_adress;:  ");
         String colName_for_updating = sc.nextLine();
-        if (colName_for_updating.equals("name") || colName_for_updating.equals("brand") || colName_for_updating.equals("description")
-                || colName_for_updating.equals("supliers_name") || colName_for_updating.equals("supliers_surname") || colName_for_updating.equals("supliers_adress")) {
+        String space = sc.nextLine();
+        if (
+                colName_for_updating.equals("name") || colName_for_updating.equals("brand") || colName_for_updating.equals("description")
+                || colName_for_updating.equals("supliers_name") || colName_for_updating.equals("supliers_surname") || colName_for_updating.equals("supliers_adress")
+        ){
             System.out.print("\n Enter new value: ");
             String nValue_String = sc.nextLine();
-            for (Material m : LM) {
+            for (Material m : LM){
                 if (m.getName().equals((name_of_updating_material))) {
-                    m.setName(nValue_String);
+                    if(colName_for_updating.equals("name")){
+                        m.setName(nValue_String);
+                    }
+                    else if(colName_for_updating.equals("brand")){
+                        m.setBrand(nValue_String);
+                    }
+                    else if(colName_for_updating.equals("description")){
+                        m.setDescription(nValue_String);
+                    }
                 }
             }
-        } else if (colName_for_updating.equals("quantity") || colName_for_updating.equals("price") || colName_for_updating.equals("supliers_phone")) {
+        }
+        else if
+        (
+                colName_for_updating.equals("quantity") || colName_for_updating.equals("price") || colName_for_updating.equals("supliers_phone")
+        ){
             int nValue_int_quantity = sc.nextInt();
-            for (Material m : LM) {
-                if (m.getName().equals((name_of_updating_material))) {
+            for (Material m : LM){
+                if (m.getName().equals((name_of_updating_material))){
                     m.setQuantity(nValue_int_quantity);
+                }
+                else if(colName_for_updating.equals("quantity")){
+                    m.setQuantity(nValue_int_quantity);
+                }
+                else if(colName_for_updating.equals("price")){
+                    m.setPrice(nValue_int_quantity);
                 }
             }
         }
     }
+    public void materialsRefillUpdate()
+    {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter material's name which you want to refill: ");
+        String name_of_object_for_refill = sc.nextLine();
+        System.out.print("\n Enter the quantity to refill: ");
+        int quantity_for_refill = sc.nextInt();
+        for (Material m : LM)
+        {
+            if(m.getName().equals((name_of_object_for_refill)))
+            {
+                m.setQuantity(m.getQuantity()+quantity_for_refill);
+
+            }
+        }
+    }
+
+
 
     //    public  void updateMaterials() throws SQLException, IOException, ClassNotFoundException {
 //        dbcon.getConnectionToDB();

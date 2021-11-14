@@ -16,7 +16,7 @@ public class MaterialWorker {
         createAllMaterials();
     }
 
-    private class Material {
+    protected class Material {
         private int id;
         private String name;
         private String brand;
@@ -56,16 +56,17 @@ public class MaterialWorker {
         }
         //Geters
         public void getInfo() {
-            System.out.println(this.id);
-            System.out.println(this.name);
-            System.out.println(this.brand);
-            System.out.println(this.description);
-            System.out.println(this.quantity);
-            System.out.println(this.price);
-            System.out.println(this.supliers_name);
-            System.out.println(this.supliers_surname);
-            System.out.println(this.supliers_phone);
-            System.out.println(this.supliers_adress);
+            System.out.println("ID: "+this.id);
+            System.out.println("Name of material: "+ this.name);
+            System.out.println("Brand of Material: "+ this.brand);
+            System.out.println("Description of Material: "+ this.description);
+            System.out.println("Quantity of Material: "+ this.quantity);
+            System.out.println("Price of Material: "+this.price);
+            System.out.println("Supplier :"+this.supliers_name);
+            System.out.println("Suppliers surname: "+this.supliers_surname);
+            System.out.println("Suppliers phone: "+this.supliers_phone);
+            System.out.println("Suppliers address: "+this.supliers_adress);
+            System.out.println("==========================================");
         }
         public int getId() {
             return this.id;
@@ -130,9 +131,7 @@ public class MaterialWorker {
         }
 
     }
-
     Scanner sc = new Scanner(System.in);
-
     public void createMaterial(int Mid, String Mname, String Mbrand, String Mdesc, int Mquan, int Mprice, String Msupn, String Msups, String Msupp, String Msupa, int supId) {
         Material material = new Material(Mid, Mname, Mbrand, Mdesc, Mquan, Mprice, Msupn, Msups, Msupp, Msupa, supId);
         LM.add(material);
@@ -169,7 +168,6 @@ public class MaterialWorker {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-
     }
     public void getAllMaterials() {
         for (Material m : LM) {
@@ -480,7 +478,7 @@ public class MaterialWorker {
 //            ex.printStackTrace();}
 //        dbcon.closeConnections();
 //    }
-    public void searchMaterial() {
+    public List<Material>searchMaterialByBrand() {
         Set<String> brandsSet = new HashSet<String>();
         HashMap<Integer, String> brandHash = new HashMap<>();
         for (int i = 0; i < LM.size(); i++) {
@@ -494,12 +492,25 @@ public class MaterialWorker {
         }
         System.out.print("\nВыберите бренд строительного материала соотвеветсвующего нужному вам материалу , введя соответственный номер: ");
         int choice = sc.nextInt();
+        String brand = brandHash.get(choice);
+        List<Material> materialsWithRequiredBrand = new ArrayList<>();
         for (Material m : LM) {
-            if (m.getBrand().equals(brandHash.get(choice))) {
+            if (m.getBrand().equals(brand)) {
+                materialsWithRequiredBrand.add(m);
                 m.getInfo();
             }
         }
-
+        return materialsWithRequiredBrand;
+    }
+    public Material searchMaterialByIdInList(int id,List<Material> l){
+        Material requiredMat = null;
+        for(Material m:l){
+            if(m.getId()==id){
+                m.getInfo();
+                requiredMat=m;
+            }
+        }
+        return requiredMat;
     }
 }    
 //    public void materialSearch() throws SQLException, IOException, ClassNotFoundException {

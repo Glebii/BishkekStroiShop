@@ -9,6 +9,9 @@ import java.util.Scanner;
 public class SuppliersWorker{
     DBConnector dbcon = new DBConnector();
     List<Supplier> LS = new ArrayList();
+    SuppliersWorker() throws SQLException, IOException, ClassNotFoundException {
+        createAllSuppliers();
+    }
     protected class Supplier{
         private int SupplierId;
         private String SupplierName;

@@ -147,6 +147,13 @@ public class TransactionWorker{
             System.out.println("Exit!!!");
         }
     }
+
+
+
+
+
+
+    ________________________________________
 //        System.out.println("Сколько штук вам нужно : ");
 //        String searchSql = String.format("SELECT Quantity , Price FROM materials WHERE Brand = \'%s\' and Name = \'%s\'", neededBrand, neededMaterial);
 //        ResultSet res3 = statement.executeQuery(searchSql);

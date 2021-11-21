@@ -127,7 +127,7 @@ public class SuppliersWorker{
             int rows = preparedStatement.executeUpdate(sql);
             System.out.println("Changes were written successfully!");
             System.out.printf("%d rows added", rows);
-//            preparedStatement.close();
+            preparedStatement.close();
         }
         catch (Exception ex)
         {
@@ -139,7 +139,8 @@ public class SuppliersWorker{
     }
     public void supplierDelete() throws SQLException, IOException, ClassNotFoundException {
 
-        try{ dbcon.getConnectionToDB();
+        try
+        { dbcon.getConnectionToDB();
         Scanner scann = new Scanner(System.in);
         System.out.println("Enter id to delete supplier: ");
         int suplirsId_to_delete = scann.nextInt();

@@ -189,8 +189,11 @@ public class MaterialWorker
     public  void updateMaterials() throws SQLException, IOException, ClassNotFoundException {
         dbcon.getConnectionToDB();
         Scanner sc = new Scanner(System.in);
+        String sql;
+
         System.out.print("\n Enter name of updating material: ");
         String name_of_updating_material = sc.nextLine();
+
 
         System.out.print("\n Enter the column name to update\n" +
                 "1)  name;\n" +
@@ -223,17 +226,9 @@ public class MaterialWorker
                     }
                 }
             }
-//                    try {
-//            String sql = String.format("UPDATE materials  SET %s = %d WHERE idmaterial = %d;", col, nValue, idupdate);
-//            PreparedStatement preparedStatement = dbcon.connection.prepareStatement(sql);
-//            int rows = preparedStatement.executeUpdate(sql);
-//            System.out.println("Changes were written successfully!");
-//            System.out.printf("%d rows added", rows);
-//        } catch (Exception ex) {
-//            System.out.println("Connection failed...");
-//            ex.printStackTrace();
-//        }
-//        dbcon.closeConnections();
+            String sql = String.format("UPDATE materials  SET %s = %s WHERE Name = %s;", colName_for_updating, nValue_String, name_of_updating_material);
+
+
         }
         else if (colName_for_updating.equals("quantity") || colName_for_updating.equals("price") || colName_for_updating.equals("supliers_phone")) {
             int nValue_int_quantity = sc.nextInt();
@@ -248,70 +243,20 @@ public class MaterialWorker
                     m.setPrice(nValue_int_quantity);
                 }
             }
+            String sql = String.format("UPDATE materials  SET %s = %d WHERE Name = %s;", colName_for_updating, nValue_int_quantity, name_of_updating_material);
+
         }
 
-
-//        switch (colName_for_updating)
-//        {
-//            case "name" :
-//                System.out.print("\n Enter new value: ");
-//                String nValue_String = sc.nextLine();
-//                for (Material m : LM)
-//                {
-//                    if(m.getName().equals((name_of_updating_material)))
-//                    {
-//                        m.setName(nValue_String);
-//                    }
-//                }
-//                break;
-//            case "brand":
-//                System.out.print("\n Enter new value: ");
-//                String nValue_String_brand = sc.nextLine();
-//                for (Material m : LM)
-//                {
-//                    if(m.getName().equals((name_of_updating_material)))
-//                    {
-//                        m.setBrand(nValue_String_brand);
-//                    }
-//                }
-//                break;
-//            case "description":
-//                System.out.print("\n Enter new value: ");
-//                String nValue_String_description = sc.nextLine();
-//                for (Material m : LM)
-//                {
-//                    if(m.getName().equals((name_of_updating_material)))
-//                    {
-//                        m.setDescription(nValue_String_description);
-//                    }
-//                }
-//                break;
-//            case "quantity":
-//                System.out.print("\n Enter new value: ");
-//                int nValue_int_quantity = sc.nextInt();
-//                for (Material m : LM)
-//                {
-//                    if(m.getName().equals((name_of_updating_material)))
-//                    {
-//                        m.setQuantity(nValue_int_quantity);
-//                    }
-//                }
-//                break;
-//            case "price":
-//                System.out.print("\n Enter new value: ");
-//                int nValue_int_price = sc.nextInt();
-//                for (Material m : LM)
-//                {
-//                    if(m.getName().equals((name_of_updating_material)))
-//                    {
-//                        m.setPrice(nValue_int_price);
-//                    }
-//                }
-//                break;
-//            case "supliers_name":
-//            case "supliers_surname":
-//            case "supliers_phone":
-//            case "supliers_adress":
+        try {
+            PreparedStatement preparedStatement = dbcon.connection.prepareStatement(sql);
+            int rows = preparedStatement.executeUpdate(sql);
+            System.out.println("Changes were written successfully!");
+            System.out.printf("%d rows added", rows);
+        } catch (Exception ex) {
+            System.out.println("Connection failed...");
+            ex.printStackTrace();
+        }
+        dbcon.closeConnections();
         }
 
 

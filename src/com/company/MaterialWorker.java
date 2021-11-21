@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class MaterialWorker {
-    List<Material> LM = new ArrayList();
+    List<Material> LM = new ArrayList<>();
     DBConnector dbcon = new DBConnector();
     SuppliersWorker sup = new SuppliersWorker();
 
@@ -17,7 +17,7 @@ public class MaterialWorker {
     }
 
     protected class Material {
-        private int id;
+        private int  id;
         private String name;
         private String brand;
         private String description;
@@ -392,15 +392,23 @@ public class MaterialWorker {
                     System.out.println("Choose the existing supplier ID for the new material: ");
                     int choosenID = sc.nextInt();
                     if (choosenID <= sup.LS.size() && choosenID > 0) {
-                        for (SuppliersWorker.Supplier s : sup.LS) {
-                            if (s.getSupplierId() == choosenID) {
-
-                            }
-                        }
+                        createMaterial(
+                                idm,
+                                name,
+                                brand,
+                                descr,
+                                quantity,
+                                price,
+                                sup.getSupByID(choosenID).getSupplierName(),
+                                sup.getSupByID(choosenID).getSupplierSurname(),
+                                sup.getSupByID(choosenID).getSupplierPhone(),
+                                sup.getSupByID(choosenID).getSupplierAdress(),
+                                sup.getSupByID(choosenID).getSupplierId()
+                        );
                     }
             }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
         }
     }
 //    public void materialsRefillInsert() throws ClassNotFoundException, SQLException, IOException {

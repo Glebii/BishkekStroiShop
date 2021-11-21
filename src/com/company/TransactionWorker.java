@@ -47,7 +47,6 @@ public class TransactionWorker{
             dbcon.getConnectionToDB();
             final String sqlForCreatingExistingTransactions="SELECT * FROM `transactions`";
             ResultSet res = dbcon.statement.executeQuery(sqlForCreatingExistingTransactions);
-            System.out.println("Getting record...");
             res.beforeFirst();
             while (res.next()){
                 int tid = res.getInt("idtransaction");
@@ -132,13 +131,15 @@ public class TransactionWorker{
                 System.out.println(s);
             }
             System.out.printf("К оплате: %d",allSumsTogether);
+            allSumsTogether=0;
+            soldMaterials.clear();
         }
         else if(secondChoice==3){
             for (String s:
                     soldMaterials) {
                 System.out.println(s);
             }
-            System.out.printf("В вашей корзине %d материала(-ов)",soldMaterials.size());
+            System.out.printf("В вашей корзине %d материала(-ов)\nОбщая сумма:%d",soldMaterials.size(),allSumsTogether);
             System.out.println("\nВы хотите продолжить покупки (1),провести оплату (2),увидеть вашу корзину(3),отменить покупку(4)?");
             int c = sc.nextInt();
             postoperativeBehavior(c);

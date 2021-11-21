@@ -11,9 +11,10 @@ public class Main {
     public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
 //        MaterialWorker mat = new MaterialWorker();
 //        mat.getAllMaterials();
-        SuppliersWorker sup = new SuppliersWorker();
-//        sup.supplierAdd();
-        sup.updateSupplier();
+        TransactionWorker tr = new TransactionWorker();
+        tr.makeASale();
+        System.out.println("===============================================");
+        tr.makeASale();
 
 
 

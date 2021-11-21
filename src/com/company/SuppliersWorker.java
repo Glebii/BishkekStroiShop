@@ -81,6 +81,17 @@ public class SuppliersWorker{
             s.getInfoAboutSup();
         }
     }
+    public Supplier getSupByID(int id){
+        Supplier requiredSup = null;
+        for (Supplier s:
+             LS) {
+            if(s.getSupplierId()==id){
+                requiredSup=s;
+            }
+
+        }
+        return requiredSup;
+    }
 
     public void updateSupplier() throws SQLException, IOException, ClassNotFoundException {
         Scanner in = new Scanner(System.in);

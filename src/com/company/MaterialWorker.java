@@ -136,6 +136,7 @@ public class MaterialWorker {
         Material material = new Material(Mid, Mname, Mbrand, Mdesc, Mquan, Mprice, Msupn, Msups, Msupp, Msupa, supId);
         LM.add(material);
     }
+
     public void createAllMaterials() throws SQLException, IOException, ClassNotFoundException {
         //All materials
         try {
@@ -196,7 +197,7 @@ public class MaterialWorker {
                     materialIterator.remove();
                 }
             }
-            String sql = String.format("DELETE FROM bishkekstroishop.materials WHERE name = \'%s\';", name_of_object);
+            String sql = String.format("DELETE FROM bishkekstroi.materials WHERE name = \'%s\';", name_of_object);
             int rows = dbcon.statement.executeUpdate(sql);
             System.out.println("Getting record...");
             System.out.printf("%d rows deleted ", rows);
@@ -513,6 +514,16 @@ public class MaterialWorker {
         }
         return materialsWithRequiredBrand;
     }
+    public Material searchMatById(int id){
+        Material requiredMat = null;
+        for (Material m:
+             LM) {
+            if(m.getId()==id){
+                requiredMat=m;
+            }
+        }
+        return requiredMat;
+    }
     public Material searchMaterialByIdInList(int id,List<Material> l){
         Material requiredMat = null;
         for(Material m:l){
@@ -524,49 +535,5 @@ public class MaterialWorker {
         return requiredMat;
     }
 }    
-//    public void materialSearch() throws SQLException, IOException, ClassNotFoundException {
-//        dbcon.getConnectionToDB();
-//        HashMap<Integer, String> Brand = new HashMap<>();
-//        int i = 1;
-//        Scanner in = new Scanner(System.in);
-//        Statement statement = dbcon.statement;
-//        ResultSet res = statement.executeQuery("SELECT DISTINCT Brand FROM materials ORDER BY Brand ASC");
-//        res.beforeFirst();
-//        while (res.next()){
-//            Brand.put(i,res.getString("Brand"));
-//            i = ++i;
-//        }
-//        for (Map.Entry entry : Brand.entrySet()) {
-//            System.out.println(entry.getKey() + ")" + " "
-//                    + entry.getValue());
-//        }
-//        System.out.print("\nВыберите бренд строительного материала для продажи , введя соответственный номер: ");
-//        int choose = in.nextInt();
-//        System.out.println();
-//        String neededBrand = Brand.get(choose);
-//        String sql = String.format("SELECT * FROM materials WHERE Brand = \'%s\'", neededBrand);
-//        ResultSet res2 = statement.executeQuery(sql);
-//        res2.beforeFirst();
-//        HashMap<Integer, List<Object>> Materials = new HashMap<>();
-//        int k = 1;
-//        while (res2.next()) {
-//            String name = res2.getString("Name");
-//            String description = res2.getString("Description");
-//            String qty = res2.getString("Quantity");
-//            String price = res2.getString("Price");
-//            String[] arr = {name, description, qty, price};
-//            Materials.put(k, Arrays.asList(arr));
-//            k = ++k;
-//        }
-//        for (Map.Entry entry : Materials.entrySet()) {
-//            int c = (int) entry.getKey();
-//            List<Object> m = Materials.get(c);
-//            System.out.println("#" + c);
-//            System.out.println("Name : " + m.get(0));
-//            System.out.println("Description : " + m.get(1));
-//            System.out.println("Quantity : " + m.get(2));
-//            System.out.println("Price : " + m.get(3));
-//            System.out.println();
-//        }
-//    }
+
 

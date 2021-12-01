@@ -530,6 +530,16 @@ public class MaterialWorker {
         }
         return materialsWithRequiredBrand;
     }
+    public Material searchMatById(int id){
+        Material requiredMat = null;
+        for (Material m:
+                LM) {
+            if(m.getId()==id){
+                requiredMat=m;
+            }
+        }
+        return requiredMat;
+    }
     public Material searchMaterialByIdInList(int id,List<Material> l){
         Material requiredMat = null;
         for(Material m:l){

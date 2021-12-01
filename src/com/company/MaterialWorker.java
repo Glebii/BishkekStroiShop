@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class MaterialWorker {
     List<Material> LM = new ArrayList<>();
@@ -101,7 +102,7 @@ public class MaterialWorker {
         public int getSupIdEqualToMatID() {
             return this.supIdEqualToMatID;
         }
-        //Seters
+        //Setters
         public  void setName(String name){
             this.name=name;
         }
@@ -117,18 +118,7 @@ public class MaterialWorker {
         public void setPrice(int price) {
             this.price = price;
         }
-        public void setSupliers_name(String supliers_name) {
-            this.supliers_name = supliers_name;
-        }
-        public void setSupliers_surname(String supliers_surname) {
-            this.supliers_surname = supliers_surname;
-        }
-        public void setSupliers_phone(String supliers_phone) {
-            this.supliers_phone = supliers_phone;
-        }
-        public void setSupliers_adress(String supliers_adress) {
-            this.supliers_adress = supliers_adress;
-        }
+
 
     }
     Scanner sc = new Scanner(System.in);
@@ -141,7 +131,7 @@ public class MaterialWorker {
         try {
 
             dbcon.getConnectionToDB();
-            final String SQL = "Select materials.idmaterial,materials.Name , materials.Brand, materials.Description, materials.Quantity, materials.Price,\n" +
+            final String SQL = "Select materials.idmaterial, materials.Name , materials.Brand, materials.Description, materials.Quantity, materials.Price,\n" +
                     "suppliers.SupplierName, suppliers.Surname, suppliers.Phone, suppliers.Adress," +
                     "materials_has_suppliers.materials_idmaterial ,materials_has_suppliers.suppliers_idsupplier\n" +
                     "from materials left join materials_has_suppliers\n" +
@@ -185,18 +175,16 @@ public class MaterialWorker {
         }
     }
     public void deleteMaterial() throws SQLException {
-        try {
+        try
+        {
             dbcon.getConnectionToDB();
             System.out.println("Enter name to delete material: ");
             String name_of_object = sc.nextLine();
-            Iterator<Material> materialIterator = LM.iterator();
-            while (materialIterator.hasNext()) {
-                Material nextMaterial = materialIterator.next();
-                if (nextMaterial.name.equals(name_of_object)) {
-                    materialIterator.remove();
-                }
-            }
-            String sql = String.format("DELETE FROM bishkekstroishop.materials WHERE name = \'%s\';", name_of_object);
+
+            Predicate<Material> deleteMaterial = (Material x) -> x.getName().equals(name_of_object);
+            LM.removeIf(deleteMaterial);
+
+            String sql = String.format("DELETE FROM materials WHERE Name=\'%s\';", name_of_object);
             int rows = dbcon.statement.executeUpdate(sql);
             System.out.println("Getting record...");
             System.out.printf("%d rows deleted ", rows);
@@ -204,70 +192,88 @@ public class MaterialWorker {
             dbcon.closeConnections();
         }
 
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
         System.out.println("Connection failed...");
-        ex.printStackTrace();}
+        ex.printStackTrace();
+        }
+        dbcon.closeConnections();
+    }
+
+    public  void updateMaterials() throws SQLException, IOException, ClassNotFoundException {
+        dbcon.getConnectionToDB();
+        String sql= "";
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("\n Enter name of updating material: ");
+        String Name_of_updating_material = sc.nextLine();
+
+        System.out.print("\n " +
+                "1)  Name;\n" +
+                "2)  Brand;\n" +
+                "3)  Description;\n" +
+                "4)  Quantity;\n" +
+                "5)  Price;\n" +
+                "Enter the column name to update:  ");
+        String colName_for_updating = sc.nextLine();
+
+        if (colName_for_updating.equals("Name") || colName_for_updating.equals("Brand") || colName_for_updating.equals("Description")) {
+            System.out.print("\n Enter new value: ");
+            String nValue_String = sc.nextLine();
+
+            for (Material m : LM)
+            {
+                if (m.getName().equals(Name_of_updating_material)) {
+                    if(colName_for_updating.equals("Name")) {
+                        m.setName(nValue_String);
+                    }
+                    if(colName_for_updating.equals("Brand")){
+                        m.setBrand(nValue_String);
+                    }
+                    else if(colName_for_updating.equals("Description")){
+                        m.setDescription(nValue_String);
+                    }
+                }
+                else{ System.out.println("Материал не найден!"); }
+            }
+            sql = String.format("UPDATE materials  SET %s=\'%s\' WHERE Name =\'%s\' ;", colName_for_updating, nValue_String, Name_of_updating_material);
+
+
+        }
+        else if (colName_for_updating.equals("Quantity") || colName_for_updating.equals("Price")) {
+            int nValue_int_quantity = sc.nextInt();
+            for (Material m : LM) {
+                if (m.getName().equals((Name_of_updating_material))) {
+                    m.setQuantity(nValue_int_quantity);
+                }
+                else if(colName_for_updating.equals("Quantity")){
+                    m.setQuantity(nValue_int_quantity);
+                }
+                else { m.setPrice(nValue_int_quantity);}
+            }
+            sql = String.format("UPDATE materials  SET %s =%d WHERE Name =\'%s\';", colName_for_updating, nValue_int_quantity, Name_of_updating_material);
+
+        }
+        else { System.out.println("Column name not found! Please, try again!"); }
+
+        try {
+            System.out.println("sql: "+sql);
+            PreparedStatement preparedStatement = dbcon.connection.prepareStatement(sql);
+            int rows = preparedStatement.executeUpdate(sql);
+            System.out.println("Changes were written successfully!");
+            System.out.printf("%d rows added", rows);
+            preparedStatement.close();
+            System.out.println("good");
+
+        }
+        catch (Exception ex) { System.out.println("Connection failed..."); ex.printStackTrace(); }
+
         dbcon.closeConnections();
 
     }
 
-    public void updateMaterials() throws SQLException, IOException, ClassNotFoundException{
+    public void materialsRefillUpdate() throws SQLException, IOException, ClassNotFoundException {
         dbcon.getConnectionToDB();
-        Scanner sc = new Scanner(System.in);
-        System.out.print("\n Enter name of updating material: ");
-        String name_of_updating_material = sc.nextLine();
-        System.out.print("\n Enter the column name to update\n" +
-                "1)  name;\n" +
-                "2)  brand;\n" +
-                "3)  description;\n" +
-                "4)  quantity;\n" +
-                "5)  price;\n" +
-                "6)  supliers_name;\n" +
-                "7)  supliers_surname;\n" +
-                "8)  supliers_phone;\n" +
-                "9) supliers_adress;");
-        String colName_for_updating = sc.nextLine();
-        String space = sc.nextLine();
-        if (
-                colName_for_updating.equals("name") || colName_for_updating.equals("brand") || colName_for_updating.equals("description")
-                || colName_for_updating.equals("supliers_name") || colName_for_updating.equals("supliers_surname") || colName_for_updating.equals("supliers_adress")
-        ){
-            System.out.print("\n Enter new value: ");
-            String nValue_String = sc.nextLine();
-            for (Material m : LM){
-                if (m.getName().equals((name_of_updating_material))) {
-                    if(colName_for_updating.equals("name")){
-                        m.setName(nValue_String);
-                    }
-                    else if(colName_for_updating.equals("brand")){
-                        m.setBrand(nValue_String);
-                    }
-                    else if(colName_for_updating.equals("description")){
-                        m.setDescription(nValue_String);
-                    }
-                }
-            }
-        }
-        else if
-        (
-                colName_for_updating.equals("quantity") || colName_for_updating.equals("price") || colName_for_updating.equals("supliers_phone")
-        ){
-            int nValue_int_quantity = sc.nextInt();
-            for (Material m : LM){
-                if (m.getName().equals((name_of_updating_material))){
-                    m.setQuantity(nValue_int_quantity);
-                }
-                else if(colName_for_updating.equals("quantity")){
-                    m.setQuantity(nValue_int_quantity);
-                }
-                else if(colName_for_updating.equals("price")){
-                    m.setPrice(nValue_int_quantity);
-                }
-            }
-        }
-    }
-    public void materialsRefillUpdate()
-    {
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter material's name which you want to refill: ");
         String name_of_object_for_refill = sc.nextLine();
@@ -278,9 +284,20 @@ public class MaterialWorker {
             if(m.getName().equals((name_of_object_for_refill)))
             {
                 m.setQuantity(m.getQuantity()+quantity_for_refill);
-
             }
         }
+        try {
+            String sql = String.format("UPDATE materials SET Quantity=Quantity+%d WHERE Name=\'%s\';", quantity_for_refill, name_of_object_for_refill);
+            PreparedStatement preparedStatement = dbcon.connection.prepareStatement(sql);
+            int rows = preparedStatement.executeUpdate(sql);
+            System.out.println("Materials were refilled successfully!");
+            System.out.printf("%d rows updated", rows);
+            preparedStatement.close();
+        } catch (Exception ex) {
+            System.out.println("Connection failed...");
+            ex.printStackTrace();
+        }
+        dbcon.closeConnections();
     }
 
 

@@ -7,14 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
-public class SuppliersWorker{
+ abstract class SuppliersWorker {
     DBConnector dbcon = new DBConnector();
-    List<Supplier> LS = new ArrayList();
-
-    SuppliersWorker() throws SQLException, IOException, ClassNotFoundException
-    {
-        createAllSuppliers();
-    }
+    private List<Supplier> LS = new ArrayList();
 
     protected class Supplier{
         private int SupplierId;
@@ -55,13 +50,16 @@ public class SuppliersWorker{
         public void setSupplierPhone(String supplierPhone) { SupplierPhone = supplierPhone; }
         public void setSupplierAdress(String supplierAdress) { SupplierAdress = supplierAdress; }
     }
+    protected List<Supplier> getLS(){
+        return this.LS;
+    }
 
-    public void createSupplier(int SID, String SN, String SS, String SP , String SA)
+    protected void createSupplier(int SID, String SN, String SS, String SP , String SA)
     {
         Supplier supplier = new Supplier(SID,SN,SS,SP,SA);
         LS.add(supplier);
     }
-    public  void createAllSuppliers() throws SQLException, IOException, ClassNotFoundException {
+    protected void createAllSuppliers() throws SQLException, IOException, ClassNotFoundException {
       //Create all suppliers from DB
         dbcon.getConnectionToDB();
         ResultSet res = dbcon.statement.executeQuery("Select * From suppliers");
@@ -76,12 +74,12 @@ public class SuppliersWorker{
         }
         dbcon.closeConnections();
     }
-    public void getAllInfoAboutSuppliers(){
+    protected void getAllInfoAboutSuppliers(){
         for(Supplier s: LS){
             s.getInfoAboutSup();
         }
     }
-    public Supplier getSupByID(int id){
+    protected Supplier getSupByID(int id){
         Supplier requiredSup = null;
         for (Supplier s:
              LS) {
@@ -93,7 +91,7 @@ public class SuppliersWorker{
         return requiredSup;
     }
 
-    public void updateSupplier() throws SQLException, IOException, ClassNotFoundException {
+    protected void updateSupplier() throws SQLException, IOException, ClassNotFoundException {
         Scanner in = new Scanner(System.in);
         getAllInfoAboutSuppliers();
         dbcon.getConnectionToDB();
@@ -148,7 +146,7 @@ public class SuppliersWorker{
         dbcon.connection.close();
 
     }
-    public void supplierDelete() throws SQLException, IOException, ClassNotFoundException {
+    protected void supplierDelete() throws SQLException, IOException, ClassNotFoundException {
 
         try
         { dbcon.getConnectionToDB();
@@ -176,7 +174,7 @@ public class SuppliersWorker{
         dbcon.closeConnections();
      }
 
-    public void supplierAdd() throws  SQLException {
+    protected void supplierAdd() throws  SQLException {
 
         try{
             dbcon.getConnectionToDB();

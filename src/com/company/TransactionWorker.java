@@ -6,18 +6,12 @@ import java.sql.Date;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-public class TransactionWorker {
+    abstract class TransactionWorker extends MaterialWorker{
     private long allSumsTogether;
     private long fullQuantity;
-    MaterialWorker mat = new MaterialWorker();
     List<Transaction> LT = new ArrayList<>();
-    DBConnector dbcon = new DBConnector();
     Map<Integer,Integer> soldMaterials = new HashMap<>();
     Scanner sc = new Scanner(System.in);
-
-    TransactionWorker() throws SQLException, IOException, ClassNotFoundException {
-        createAllTransactions();
-    }
 
     private class Transaction {
         private int transactionId;
@@ -61,7 +55,7 @@ public class TransactionWorker {
         LT.add(transaction);
     }
 
-    private void createAllTransactions() throws SQLException, IOException, ClassNotFoundException {
+    protected void createAllTransactions() throws SQLException, IOException, ClassNotFoundException {
         try {
             dbcon.getConnectionToDB();
             final String sqlForCreatingExistingTransactions = "SELECT * FROM `transactions`";
@@ -94,10 +88,10 @@ public class TransactionWorker {
 
     public void makeASale() throws SQLException, IOException, ClassNotFoundException {
 
-        List<MaterialWorker.Material> requiredMaterials = new ArrayList<>(mat.searchMaterialByBrand());
+        List<MaterialWorker.Material> requiredMaterials = new ArrayList<>(searchMaterialByBrand());
         System.out.print("Выберите материал для покупки,введя его ID номер: ");
         int idOfRequiredMaterial = sc.nextInt();
-        MaterialWorker.Material neededMaterial = mat.searchMaterialByIdInList(idOfRequiredMaterial, requiredMaterials);
+        MaterialWorker.Material neededMaterial = searchMaterialByIdInList(idOfRequiredMaterial, requiredMaterials);
         System.out.println("Какое количество единиц данного материала вам нужно: ");
         int buyerQuantity = sc.nextInt();
         if (buyerQuantity > neededMaterial.getQuantity()) {
@@ -157,7 +151,7 @@ public class TransactionWorker {
         else if (secondChoice == 2) {
             System.out.println("Ваш заказ:");
             for (Map.Entry<Integer,Integer> e: soldMaterials.entrySet()) {
-                MaterialWorker.Material m = mat.searchMatById(e.getKey());
+                MaterialWorker.Material m = searchMatById(e.getKey());
                 System.out.printf("ID:%d\nName:%s\nDescription:%s\nPrice:%d\nQuantity for sale:%d\nThe amount for this material:%d\n\n",m.getId(),m.getName(),m.getDescription(),m.getPrice(),e.getValue(),e.getValue()*m.getPrice());
             }
             System.out.printf("К оплате: %d\nВведите вносимую сумму:", allSumsTogether);
@@ -166,7 +160,7 @@ public class TransactionWorker {
         }
         else if (secondChoice == 3) {
             for (Map.Entry<Integer,Integer> e: soldMaterials.entrySet()) {
-                MaterialWorker.Material m = mat.searchMatById(e.getKey());
+                MaterialWorker.Material m = searchMatById(e.getKey());
                 System.out.printf("ID:%d\nName:%s\nDescription:%s\nPrice:%d\nQuantity for sale:%d\nThe amount for this material:%d\n\n",m.getId(),m.getName(),m.getDescription(),m.getPrice(),e.getValue(),e.getValue()*m.getPrice());
             }
             System.out.printf("В вашей корзине %d материала(-ов)\nОбщая сумма:%d", soldMaterials.size(), allSumsTogether);
@@ -197,11 +191,11 @@ public class TransactionWorker {
         }
         else if(money>=allSumsTogether){
 
-            System.out.printf("Отлично транзакция проведена! Ваша сдача: %d\n",money-allSumsTogether);
+
             String date = getTime();
             String info = "";
             for (Map.Entry<Integer,Integer> e: soldMaterials.entrySet()) {
-                MaterialWorker.Material m = mat.searchMatById(e.getKey());
+                MaterialWorker.Material m = searchMatById(e.getKey());
                 info = info.concat(String.format("Id:%d Name:%s Quantity of sold:%d Price:%d\n",m.getId(),m.getName(),e.getValue(),m.getPrice()));
             }
             dbcon.getConnectionToDB();
@@ -209,15 +203,17 @@ public class TransactionWorker {
             PreparedStatement transactionConducter = dbcon.connection.prepareStatement(transaction);
             transactionConducter.executeUpdate(transaction);
             dbcon.closeConnections();
+            System.out.printf("Отлично транзакция проведена! Ваша сдача: %d\n",money-allSumsTogether);
             allSumsTogether=0;
             fullQuantity=0;
             soldMaterials.clear();
-            зафикси
+
+
         }
     }
     public void rollingBackChanges() throws SQLException, IOException, ClassNotFoundException {
         for (Map.Entry<Integer,Integer> e: soldMaterials.entrySet()) {
-            MaterialWorker.Material m = mat.searchMatById(e.getKey());
+            MaterialWorker.Material m = searchMatById(e.getKey());
             dbcon.getConnectionToDB();
             final String sqlForRollback =String.format("UPDATE materials SET Quantity=%d WHERE idmaterial=%d",m.getQuantity()+e.getValue(),e.getKey());
             PreparedStatement roller = dbcon.connection.prepareStatement(sqlForRollback);

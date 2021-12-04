@@ -7,15 +7,10 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class MaterialWorker {
-    List<Material> LM = new ArrayList<>();
-    DBConnector dbcon = new DBConnector();
-    SuppliersWorker sup = new SuppliersWorker();
-
-    MaterialWorker() throws SQLException, IOException, ClassNotFoundException {
-        sup.createAllSuppliers();
-        createAllMaterials();
-    }
+abstract class MaterialWorker extends SuppliersWorker{
+    private List<Material> LM = new ArrayList<>();
+    final String sqlForCreatingNewMaterial = "INSERT materials(idmaterial,Name, Brand, Description, Quantity, Price) VALUES (%d, \'%s\',\'%s\',\'%s\',%d,%d);";
+    final String sqlForMakingConnectionBetweenSupAndMat = "INSERT materials_has_suppliers(materials_idmaterial, suppliers_idsupplier) VALUES (%d, %d);";
 
     protected class Material {
         private int  id;
@@ -138,7 +133,6 @@ public class MaterialWorker {
                     "on materials.idmaterial = materials_has_suppliers.materials_idmaterial\n" +
                     "left join suppliers on materials_has_suppliers.suppliers_idsupplier = suppliers.idsupplier;";
             ResultSet res = dbcon.statement.executeQuery(SQL);
-            System.out.println("Getting record...");
             res.beforeFirst();
             while (res.next()) {
                 int id = res.getInt("idmaterial");
@@ -300,48 +294,6 @@ public class MaterialWorker {
         dbcon.closeConnections();
     }
 
-
-
-    //    public  void updateMaterials() throws SQLException, IOException, ClassNotFoundException {
-//        dbcon.getConnectionToDB();
-//        Scanner in = new Scanner(System.in);
-//        System.out.print("\n Enter the column name to update:  ");
-//        String col = in.nextLine();
-//        System.out.print("\n Enter id of updating material: ");
-//        int idupdate = in.nextInt();
-//        System.out.print("\n Enter new value: ");
-//        int nValue = in.nextInt();
-//        try {
-//            String sql = String.format("UPDATE materials  SET %s = %d WHERE idmaterial = %d;", col, nValue, idupdate);
-//            PreparedStatement preparedStatement = dbcon.connection.prepareStatement(sql);
-//            int rows = preparedStatement.executeUpdate(sql);
-//            System.out.println("Changes were written successfully!");
-//            System.out.printf("%d rows added", rows);
-//        } catch (Exception ex) {
-//            System.out.println("Connection failed...");
-//            ex.printStackTrace();
-//        }
-//        dbcon.closeConnections();
-//    }
-//    public void materialsRefillUpdate() throws SQLException, IOException, ClassNotFoundException {
-//        dbcon.getConnectionToDB();
-//        Scanner in = new Scanner(System.in);
-//        System.out.print("Enter material's ID which you want to refill: ");
-//        int id = in.nextInt();
-//        System.out.print("\n Enter the quantity to refill: ");
-//        int quantity = in.nextInt();
-//        try {
-//            String sql = String.format("UPDATE materials SET Quantity=Quantity+ %s WHERE idmaterial=%s;", quantity, id);
-//            PreparedStatement preparedStatement = dbcon.connection.prepareStatement(sql);
-//            int rows = preparedStatement.executeUpdate(sql);
-//            System.out.println("Materials were refilled successfully!");
-//            System.out.printf("%d rows updated", rows);
-//        } catch (Exception ex) {
-//            System.out.println("Connection failed...");
-//            ex.printStackTrace();
-//        }
-//        dbcon.closeConnections();
-//    }
     public void createTheNewMaterial() throws ClassNotFoundException, SQLException, IOException {
         try {
             dbcon.getConnectionToDB();
@@ -368,7 +320,7 @@ public class MaterialWorker {
             switch (choice) {
                 case 1:
                     System.out.println("Now you will need to enter the required information for new supplier");
-                    int SIDs = sup.LS.size() + 1;
+                    int SIDs = getLS().size() + 1;
                     System.out.println("\nEnter Supplier Name: ");
                     String nameOfNewSupplier = sc.next();
                     System.out.println("\nEnter Surname: ");
@@ -378,7 +330,7 @@ public class MaterialWorker {
                     System.out.println("Enter Address: ");
                     String spaceV2 = sc.nextLine();
                     String addressOfNewSupplier = sc.nextLine();
-                    sup.createSupplier(SIDs, nameOfNewSupplier, surnameOfNewSupplier, phoneOfNewSupplier, addressOfNewSupplier);
+                    createSupplier(SIDs, nameOfNewSupplier, surnameOfNewSupplier, phoneOfNewSupplier, addressOfNewSupplier);
                     createMaterial(idm, name, brand, descr, quantity, price, nameOfNewSupplier, surnameOfNewSupplier, phoneOfNewSupplier, addressOfNewSupplier, SIDs);
                     final String sqlForCreatingNewSupplier = String.format(
                             "INSERT suppliers(idsupplier,SupplierName, Surname, Phone, Adress) VALUES (%d,\'%s\',\'%s\',\'%s\',\'%s\');",
@@ -386,29 +338,29 @@ public class MaterialWorker {
                     );
                     PreparedStatement supplierCreatorDB = dbcon.connection.prepareStatement(sqlForCreatingNewSupplier);
                     supplierCreatorDB.executeUpdate(sqlForCreatingNewSupplier);
-                    final String sqlForCreatingNewMaterial = String.format(
-                            "INSERT materials(idmaterial,Name, Brand, Description, Quantity, Price) VALUES (%d, \'%s\',\'%s\',\'%s\',%d,%d);",
+                    final String sqlBasedOnCNM = String.format(
+                            sqlForCreatingNewMaterial,
                             idm, name, brand, descr, quantity, price
                     );
-                    PreparedStatement materialCreatorDB = dbcon.connection.prepareStatement(sqlForCreatingNewMaterial);
-                    materialCreatorDB.executeUpdate(sqlForCreatingNewMaterial);
-                    final String sqlForMakingConnectionBetweenSupAndMat = String.format(
-                            "INSERT materials_has_suppliers(materials_idmaterial, suppliers_idsupplier) VALUES (%d, %d);",
+                    PreparedStatement materialCreatorDB = dbcon.connection.prepareStatement(sqlBasedOnCNM);
+                    materialCreatorDB.executeUpdate();
+                    final String sqlBasedOnMCBSM = String.format(
+                            sqlForMakingConnectionBetweenSupAndMat,
                             idm, SIDs
                     );
-                    PreparedStatement materialWithSupplierConnector = dbcon.connection.prepareStatement(sqlForMakingConnectionBetweenSupAndMat);
-                    materialWithSupplierConnector.executeUpdate(sqlForMakingConnectionBetweenSupAndMat);
+                    PreparedStatement materialWithSupplierConnector = dbcon.connection.prepareStatement(sqlBasedOnMCBSM);
+                    materialWithSupplierConnector.executeUpdate();
                     dbcon.closeConnections();
                     System.out.println("==================MAterials========================");
                     getAllMaterials();
                     System.out.println("===============Sups===============================");
-                    sup.getAllInfoAboutSuppliers();
+                    getAllInfoAboutSuppliers();
                     break;
                 case 2:
-                    sup.getAllInfoAboutSuppliers();
+                    getAllInfoAboutSuppliers();
                     System.out.println("Choose the existing supplier ID for the new material: ");
                     int choosenID = sc.nextInt();
-                    if (choosenID <= sup.LS.size() && choosenID > 0) {
+                    if (choosenID <= getLS().size() && choosenID > 0) {
                         createMaterial(
                                 idm,
                                 name,
@@ -416,96 +368,36 @@ public class MaterialWorker {
                                 descr,
                                 quantity,
                                 price,
-                                sup.getSupByID(choosenID).getSupplierName(),
-                                sup.getSupByID(choosenID).getSupplierSurname(),
-                                sup.getSupByID(choosenID).getSupplierPhone(),
-                                sup.getSupByID(choosenID).getSupplierAdress(),
-                                sup.getSupByID(choosenID).getSupplierId()
+                                getSupByID(choosenID).getSupplierName(),
+                                getSupByID(choosenID).getSupplierSurname(),
+                                getSupByID(choosenID).getSupplierPhone(),
+                                getSupByID(choosenID).getSupplierAdress(),
+                                getSupByID(choosenID).getSupplierId()
                         );
+                        final String sqlBasedOnCNMES = String.format(
+                                sqlForCreatingNewMaterial,
+                                idm, name, brand, descr, quantity, price
+                        );
+                        PreparedStatement materialCDB = dbcon.connection.prepareStatement(sqlBasedOnCNMES);
+                        materialCDB.executeUpdate();
+                        final String sqlBasedOnMCBESM = String.format(
+                                sqlForMakingConnectionBetweenSupAndMat,
+                                idm, choosenID
+                        );
+                        PreparedStatement materialWSC = dbcon.connection.prepareStatement(sqlBasedOnMCBESM);
+                        materialWSC.executeUpdate();
+                        dbcon.closeConnections();
+                        System.out.println("==================MAterials========================");
+                        getAllMaterials();
+                        System.out.println("===============Sups===============================");
+                        getAllInfoAboutSuppliers();
                     }
+                    break;
             }
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
     }
-//    public void materialsRefillInsert() throws ClassNotFoundException, SQLException, IOException {
-//        int idm = in.nextInt();
-
-    //        try {
-//            String sql = String.format("INSERT materials(idmaterial,Name, Brand, Description, Quantity, Price) VALUES (%d, \'%s\',\'%s\',\'%s\',\'%s\',\'%s\');",
-//                    idm, name, brand, descr, quantity, price);
-//            PreparedStatement preparedStatement = dbcon.connection.prepareStatement(sql);
-//            int rows = preparedStatement.executeUpdate(sql);
-//            System.out.println("New Material is added successfully!");
-//            System.out.printf("%d rows updated", rows);
-//            System.out.println("Your choice: ");
-//            int choice = in.nextInt();
-//            switch (choice) {
-//                case 1:
-//                    Scanner inn = new Scanner(System.in);
-//                    System.out.println("Now you will need to enter the required information for new supplier");
-//                    String sname = inn.nextLine();
-//                    System.out.println("\nEnter Surname: ");
-//                    String surn = inn.nextLine();
-//                    System.out.println("Enter Phone: ");
-//                    String phone = in.nextLine();
-//                    System.out.println("Enter Address: ");
-//                    String adrs = inn.nextLine();
-//                    try {
-//                        String sql1 = String.format("INSERT suppliers(idsupplier,SupplierName, Surname, Phone, Adress) VALUES (%d,\'%s\',\'%s\',\'%s\',\'%s\');",
-//                                ids, sname, surn, phone, adrs);
-//                        PreparedStatement preparedStatement1 = dbcon.connection.prepareStatement(sql1);
-//                        int rows1 = preparedStatement1.executeUpdate(sql1);
-//                        System.out.println("New supplier is added successfully!");
-//                        System.out.println("Rows added: " + rows1);
-//                        String sql2 = String.format("INSERT materials_has_suppliers(materials_idmaterial, suppliers_idsupplier) VALUES (%d, %d);",
-//                                idm, ids);
-//                        PreparedStatement preparedStatement2 = dbcon.connection.prepareStatement(sql2);
-//                        int rows2 = preparedStatement2.executeUpdate(sql2);
-//                        System.out.println("New relation is added successfully!");
-//                        System.out.println("Rows added: " + rows2);
-//                    } catch (Exception ex) {
-//                        System.out.println("Connection failed...");
-//                        ex.printStackTrace();
-//                    }
-//                    break;
-//                case 2:
-//                    try {
-//                        ResultSet res2 = dbcon.statement.executeQuery("Select * from Suppliers");
-//                        System.out.println("Getting record...");
-//                        res2.beforeFirst();
-//                        while (res2.next()) {
-//                            int ids2 = res2.getInt("idsupplier");
-//                            String supname2 = res2.getString("SupplierName");
-//                            String supsurname2 = res2.getString("Surname");
-//                            String phone2 = res2.getString("Phone");
-//                            String adress2 = res2.getString("Adress");
-//                            System.out.println(ids2);
-//                            System.out.println("Supliers name: " + supname2);
-//                            System.out.println("Supliers surname: " + supsurname2);
-//                            System.out.println("Supliers phone: " + phone2);
-//                            System.out.println("Supliers adress: " + adress2);
-//                            System.out.println("\n=================================\n");
-//                        }
-//                        System.out.println("Choose the existing supplier ID for the new material: ");
-//                        int ids3 = in.nextInt();
-//                        String sql3 = String.format("INSERT materials_has_suppliers(materials_idmaterial, suppliers_idsupplier) VALUES (%d, %d);",
-//                                idm, ids3);
-//                        PreparedStatement preparedStatement2 = dbcon.connection.prepareStatement(sql3);
-//                        int rows3 = preparedStatement2.executeUpdate(sql3);
-//                        System.out.println("New relation is added successfully!");
-//                        System.out.println("Rows added: " + rows3);
-//                        break;
-//                    } catch (Exception ex) {
-//                        System.out.println("Connection failed...");
-//                        ex.printStackTrace();
-//                    }
-//            }
-//        }catch (Exception ex) {
-//            System.out.println("Connection failed...");
-//            ex.printStackTrace();}
-//        dbcon.closeConnections();
-//    }
     public List<Material>searchMaterialByBrand() {
         Set<String> brandsSet = new HashSet<String>();
         HashMap<Integer, String> brandHash = new HashMap<>();
@@ -550,50 +442,5 @@ public class MaterialWorker {
         }
         return requiredMat;
     }
-}    
-//    public void materialSearch() throws SQLException, IOException, ClassNotFoundException {
-//        dbcon.getConnectionToDB();
-//        HashMap<Integer, String> Brand = new HashMap<>();
-//        int i = 1;
-//        Scanner in = new Scanner(System.in);
-//        Statement statement = dbcon.statement;
-//        ResultSet res = statement.executeQuery("SELECT DISTINCT Brand FROM materials ORDER BY Brand ASC");
-//        res.beforeFirst();
-//        while (res.next()){
-//            Brand.put(i,res.getString("Brand"));
-//            i = ++i;
-//        }
-//        for (Map.Entry entry : Brand.entrySet()) {
-//            System.out.println(entry.getKey() + ")" + " "
-//                    + entry.getValue());
-//        }
-//        System.out.print("\nВыберите бренд строительного материала для продажи , введя соответственный номер: ");
-//        int choose = in.nextInt();
-//        System.out.println();
-//        String neededBrand = Brand.get(choose);
-//        String sql = String.format("SELECT * FROM materials WHERE Brand = \'%s\'", neededBrand);
-//        ResultSet res2 = statement.executeQuery(sql);
-//        res2.beforeFirst();
-//        HashMap<Integer, List<Object>> Materials = new HashMap<>();
-//        int k = 1;
-//        while (res2.next()) {
-//            String name = res2.getString("Name");
-//            String description = res2.getString("Description");
-//            String qty = res2.getString("Quantity");
-//            String price = res2.getString("Price");
-//            String[] arr = {name, description, qty, price};
-//            Materials.put(k, Arrays.asList(arr));
-//            k = ++k;
-//        }
-//        for (Map.Entry entry : Materials.entrySet()) {
-//            int c = (int) entry.getKey();
-//            List<Object> m = Materials.get(c);
-//            System.out.println("#" + c);
-//            System.out.println("Name : " + m.get(0));
-//            System.out.println("Description : " + m.get(1));
-//            System.out.println("Quantity : " + m.get(2));
-//            System.out.println("Price : " + m.get(3));
-//            System.out.println();
-//        }
-//    }
+}
 

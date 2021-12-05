@@ -12,6 +12,12 @@ public class Main {
 //        System.out.println("===============================================");
         Admin a = new Admin(12,"Bob",13);
         a.getAllInfoAboutSuppliers();
+        a.supplierAdd();
+
+
+        Cashier c = new Cashier(12,"Mob",13);
+        c.getAllInfoAboutSuppliers();
+
 
 
 

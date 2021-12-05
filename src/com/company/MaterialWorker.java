@@ -1,11 +1,9 @@
 package com.company;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.function.Predicate;
 
 abstract class MaterialWorker extends SuppliersWorker{
     private List<Material> LM = new ArrayList<>();
@@ -116,6 +114,12 @@ abstract class MaterialWorker extends SuppliersWorker{
 
 
     }
+
+    protected List<Material> getLM(){
+        return this.LM;
+    }
+
+
     Scanner sc = new Scanner(System.in);
     public void createMaterial(int Mid, String Mname, String Mbrand, String Mdesc, int Mquan, int Mprice, String Msupn, String Msups, String Msupp, String Msupa, int supId) {
         Material material = new Material(Mid, Mname, Mbrand, Mdesc, Mquan, Mprice, Msupn, Msups, Msupp, Msupa, supId);
@@ -168,236 +172,237 @@ abstract class MaterialWorker extends SuppliersWorker{
             System.out.println("\n=================================\n");
         }
     }
-    public void deleteMaterial() throws SQLException {
-        try
-        {
-            dbcon.getConnectionToDB();
-            System.out.println("Enter name to delete material: ");
-            String name_of_object = sc.nextLine();
-
-            Predicate<Material> deleteMaterial = (Material x) -> x.getName().equals(name_of_object);
-            LM.removeIf(deleteMaterial);
-
-            String sql = String.format("DELETE FROM materials WHERE Name=\'%s\';", name_of_object);
-            int rows = dbcon.statement.executeUpdate(sql);
-            System.out.println("Getting record...");
-            System.out.printf("%d rows deleted ", rows);
-            getAllMaterials();
-            dbcon.closeConnections();
-        }
-
-        catch (Exception ex)
-        {
-        System.out.println("Connection failed...");
-        ex.printStackTrace();
-        }
-        dbcon.closeConnections();
-    }
-
-    public  void updateMaterials() throws SQLException, IOException, ClassNotFoundException {
-        dbcon.getConnectionToDB();
-        String sql= "";
-        Scanner sc = new Scanner(System.in);
-
-        System.out.print("\n Enter name of updating material: ");
-        String Name_of_updating_material = sc.nextLine();
-
-        System.out.print("\n " +
-                "1)  Name;\n" +
-                "2)  Brand;\n" +
-                "3)  Description;\n" +
-                "4)  Quantity;\n" +
-                "5)  Price;\n" +
-                "Enter the column name to update:  ");
-        String colName_for_updating = sc.nextLine();
-
-        if (colName_for_updating.equals("Name") || colName_for_updating.equals("Brand") || colName_for_updating.equals("Description")) {
-            System.out.print("\n Enter new value: ");
-            String nValue_String = sc.nextLine();
-
-            for (Material m : LM)
-            {
-                if (m.getName().equals(Name_of_updating_material)) {
-                    if(colName_for_updating.equals("Name")) {
-                        m.setName(nValue_String);
-                    }
-                    if(colName_for_updating.equals("Brand")){
-                        m.setBrand(nValue_String);
-                    }
-                    else if(colName_for_updating.equals("Description")){
-                        m.setDescription(nValue_String);
-                    }
-                }
-                else{ System.out.println("Материал не найден!"); }
-            }
-            sql = String.format("UPDATE materials  SET %s=\'%s\' WHERE Name =\'%s\' ;", colName_for_updating, nValue_String, Name_of_updating_material);
-
-
-        }
-        else if (colName_for_updating.equals("Quantity") || colName_for_updating.equals("Price")) {
-            int nValue_int_quantity = sc.nextInt();
-            for (Material m : LM) {
-                if (m.getName().equals((Name_of_updating_material))) {
-                    m.setQuantity(nValue_int_quantity);
-                }
-                else if(colName_for_updating.equals("Quantity")){
-                    m.setQuantity(nValue_int_quantity);
-                }
-                else { m.setPrice(nValue_int_quantity);}
-            }
-            sql = String.format("UPDATE materials  SET %s =%d WHERE Name =\'%s\';", colName_for_updating, nValue_int_quantity, Name_of_updating_material);
-
-        }
-        else { System.out.println("Column name not found! Please, try again!"); }
-
-        try {
-            System.out.println("sql: "+sql);
-            PreparedStatement preparedStatement = dbcon.connection.prepareStatement(sql);
-            int rows = preparedStatement.executeUpdate(sql);
-            System.out.println("Changes were written successfully!");
-            System.out.printf("%d rows added", rows);
-            preparedStatement.close();
-            System.out.println("good");
-
-        }
-        catch (Exception ex) { System.out.println("Connection failed..."); ex.printStackTrace(); }
-
-        dbcon.closeConnections();
-
-    }
-
-    public void materialsRefillUpdate() throws SQLException, IOException, ClassNotFoundException {
-        dbcon.getConnectionToDB();
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Enter material's name which you want to refill: ");
-        String name_of_object_for_refill = sc.nextLine();
-        System.out.print("\n Enter the quantity to refill: ");
-        int quantity_for_refill = sc.nextInt();
-        for (Material m : LM)
-        {
-            if(m.getName().equals((name_of_object_for_refill)))
-            {
-                m.setQuantity(m.getQuantity()+quantity_for_refill);
-            }
-        }
-        try {
-            String sql = String.format("UPDATE materials SET Quantity=Quantity+%d WHERE Name=\'%s\';", quantity_for_refill, name_of_object_for_refill);
-            PreparedStatement preparedStatement = dbcon.connection.prepareStatement(sql);
-            int rows = preparedStatement.executeUpdate(sql);
-            System.out.println("Materials were refilled successfully!");
-            System.out.printf("%d rows updated", rows);
-            preparedStatement.close();
-        } catch (Exception ex) {
-            System.out.println("Connection failed...");
-            ex.printStackTrace();
-        }
-        dbcon.closeConnections();
-    }
-
-    public void createTheNewMaterial() throws ClassNotFoundException, SQLException, IOException {
-        try {
-            dbcon.getConnectionToDB();
-            System.out.println("Now you will need to enter the required information for new material");
-            System.out.println("Enter new ID: ");
-            int idm = sc.nextInt();
-            System.out.println("\nEnter Name: ");
-            String name = sc.next();
-            System.out.println();
-            System.out.println("Enter Brand: ");
-            String brand = sc.next();
-            System.out.println("Enter Description: ");
-            String space = sc.nextLine();
-            String descr = sc.nextLine();
-            System.out.println("\nEnter Quantity: ");
-            int quantity = sc.nextInt();
-            System.out.println("Enter Price: ");
-            int price = sc.nextInt();
-            System.out.println("Now, please enter the information for the supplier of added material");
-            System.out.println("Do you want to add a new supplier or choose the existing one?");
-            System.out.println("1-Add new supplier for this material");
-            System.out.println("2-Choose the existing supplier");
-            int choice = sc.nextInt();
-            switch (choice) {
-                case 1:
-                    System.out.println("Now you will need to enter the required information for new supplier");
-                    int SIDs = getLS().size() + 1;
-                    System.out.println("\nEnter Supplier Name: ");
-                    String nameOfNewSupplier = sc.next();
-                    System.out.println("\nEnter Surname: ");
-                    String surnameOfNewSupplier = sc.next();
-                    System.out.println("Enter Phone: ");
-                    String phoneOfNewSupplier = sc.next();
-                    System.out.println("Enter Address: ");
-                    String spaceV2 = sc.nextLine();
-                    String addressOfNewSupplier = sc.nextLine();
-                    createSupplier(SIDs, nameOfNewSupplier, surnameOfNewSupplier, phoneOfNewSupplier, addressOfNewSupplier);
-                    createMaterial(idm, name, brand, descr, quantity, price, nameOfNewSupplier, surnameOfNewSupplier, phoneOfNewSupplier, addressOfNewSupplier, SIDs);
-                    final String sqlForCreatingNewSupplier = String.format(
-                            "INSERT suppliers(idsupplier,SupplierName, Surname, Phone, Adress) VALUES (%d,\'%s\',\'%s\',\'%s\',\'%s\');",
-                            SIDs, nameOfNewSupplier, surnameOfNewSupplier, phoneOfNewSupplier, addressOfNewSupplier
-                    );
-                    PreparedStatement supplierCreatorDB = dbcon.connection.prepareStatement(sqlForCreatingNewSupplier);
-                    supplierCreatorDB.executeUpdate(sqlForCreatingNewSupplier);
-                    final String sqlBasedOnCNM = String.format(
-                            sqlForCreatingNewMaterial,
-                            idm, name, brand, descr, quantity, price
-                    );
-                    PreparedStatement materialCreatorDB = dbcon.connection.prepareStatement(sqlBasedOnCNM);
-                    materialCreatorDB.executeUpdate();
-                    final String sqlBasedOnMCBSM = String.format(
-                            sqlForMakingConnectionBetweenSupAndMat,
-                            idm, SIDs
-                    );
-                    PreparedStatement materialWithSupplierConnector = dbcon.connection.prepareStatement(sqlBasedOnMCBSM);
-                    materialWithSupplierConnector.executeUpdate();
-                    dbcon.closeConnections();
-                    System.out.println("==================MAterials========================");
-                    getAllMaterials();
-                    System.out.println("===============Sups===============================");
-                    getAllInfoAboutSuppliers();
-                    break;
-                case 2:
-                    getAllInfoAboutSuppliers();
-                    System.out.println("Choose the existing supplier ID for the new material: ");
-                    int choosenID = sc.nextInt();
-                    if (choosenID <= getLS().size() && choosenID > 0) {
-                        createMaterial(
-                                idm,
-                                name,
-                                brand,
-                                descr,
-                                quantity,
-                                price,
-                                getSupByID(choosenID).getSupplierName(),
-                                getSupByID(choosenID).getSupplierSurname(),
-                                getSupByID(choosenID).getSupplierPhone(),
-                                getSupByID(choosenID).getSupplierAdress(),
-                                getSupByID(choosenID).getSupplierId()
-                        );
-                        final String sqlBasedOnCNMES = String.format(
-                                sqlForCreatingNewMaterial,
-                                idm, name, brand, descr, quantity, price
-                        );
-                        PreparedStatement materialCDB = dbcon.connection.prepareStatement(sqlBasedOnCNMES);
-                        materialCDB.executeUpdate();
-                        final String sqlBasedOnMCBESM = String.format(
-                                sqlForMakingConnectionBetweenSupAndMat,
-                                idm, choosenID
-                        );
-                        PreparedStatement materialWSC = dbcon.connection.prepareStatement(sqlBasedOnMCBESM);
-                        materialWSC.executeUpdate();
-                        dbcon.closeConnections();
-                        System.out.println("==================MAterials========================");
-                        getAllMaterials();
-                        System.out.println("===============Sups===============================");
-                        getAllInfoAboutSuppliers();
-                    }
-                    break;
-            }
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-    }
+    //Admin's method
+//    public void deleteMaterial() throws SQLException {
+//        try
+//        {
+//            dbcon.getConnectionToDB();
+//            System.out.println("Enter name to delete material: ");
+//            String name_of_object = sc.nextLine();
+//
+//            Predicate<Material> deleteMaterial = (Material x) -> x.getName().equals(name_of_object);
+//            LM.removeIf(deleteMaterial);
+//
+//            String sql = String.format("DELETE FROM materials WHERE Name=\'%s\';", name_of_object);
+//            int rows = dbcon.statement.executeUpdate(sql);
+//            System.out.println("Getting record...");
+//            System.out.printf("%d rows deleted ", rows);
+//            getAllMaterials();
+//            dbcon.closeConnections();
+//        }
+//
+//        catch (Exception ex)
+//        {
+//        System.out.println("Connection failed...");
+//        ex.printStackTrace();
+//        }
+//        dbcon.closeConnections();
+//    }
+    //Admin's method
+//    public  void updateMaterials() throws SQLException, IOException, ClassNotFoundException {
+//        dbcon.getConnectionToDB();
+//        String sql= "";
+//        Scanner sc = new Scanner(System.in);
+//
+//        System.out.print("\n Enter name of updating material: ");
+//        String Name_of_updating_material = sc.nextLine();
+//
+//        System.out.print("\n " +
+//                "1)  Name;\n" +
+//                "2)  Brand;\n" +
+//                "3)  Description;\n" +
+//                "4)  Quantity;\n" +
+//                "5)  Price;\n" +
+//                "Enter the column name to update:  ");
+//        String colName_for_updating = sc.nextLine();
+//
+//        if (colName_for_updating.equals("Name") || colName_for_updating.equals("Brand") || colName_for_updating.equals("Description")) {
+//            System.out.print("\n Enter new value: ");
+//            String nValue_String = sc.nextLine();
+//
+//            for (Material m : LM)
+//            {
+//                if (m.getName().equals(Name_of_updating_material)) {
+//                    if(colName_for_updating.equals("Name")) {
+//                        m.setName(nValue_String);
+//                    }
+//                    if(colName_for_updating.equals("Brand")){
+//                        m.setBrand(nValue_String);
+//                    }
+//                    else if(colName_for_updating.equals("Description")){
+//                        m.setDescription(nValue_String);
+//                    }
+//                }
+//                else{ System.out.println("Материал не найден!"); }
+//            }
+//            sql = String.format("UPDATE materials  SET %s=\'%s\' WHERE Name =\'%s\' ;", colName_for_updating, nValue_String, Name_of_updating_material);
+//
+//
+//        }
+//        else if (colName_for_updating.equals("Quantity") || colName_for_updating.equals("Price")) {
+//            int nValue_int_quantity = sc.nextInt();
+//            for (Material m : LM) {
+//                if (m.getName().equals((Name_of_updating_material))) {
+//                    m.setQuantity(nValue_int_quantity);
+//                }
+//                else if(colName_for_updating.equals("Quantity")){
+//                    m.setQuantity(nValue_int_quantity);
+//                }
+//                else { m.setPrice(nValue_int_quantity);}
+//            }
+//            sql = String.format("UPDATE materials  SET %s =%d WHERE Name =\'%s\';", colName_for_updating, nValue_int_quantity, Name_of_updating_material);
+//
+//        }
+//        else { System.out.println("Column name not found! Please, try again!"); }
+//
+//        try {
+//            System.out.println("sql: "+sql);
+//            PreparedStatement preparedStatement = dbcon.connection.prepareStatement(sql);
+//            int rows = preparedStatement.executeUpdate(sql);
+//            System.out.println("Changes were written successfully!");
+//            System.out.printf("%d rows added", rows);
+//            preparedStatement.close();
+//            System.out.println("good");
+//
+//        }
+//        catch (Exception ex) { System.out.println("Connection failed..."); ex.printStackTrace(); }
+//
+//        dbcon.closeConnections();
+//
+//    }
+    //Admin's method
+//    public void materialsRefillUpdate() throws SQLException, IOException, ClassNotFoundException {
+//        dbcon.getConnectionToDB();
+//        Scanner sc = new Scanner(System.in);
+//        System.out.print("Enter material's name which you want to refill: ");
+//        String name_of_object_for_refill = sc.nextLine();
+//        System.out.print("\n Enter the quantity to refill: ");
+//        int quantity_for_refill = sc.nextInt();
+//        for (Material m : LM)
+//        {
+//            if(m.getName().equals((name_of_object_for_refill)))
+//            {
+//                m.setQuantity(m.getQuantity()+quantity_for_refill);
+//            }
+//        }
+//        try {
+//            String sql = String.format("UPDATE materials SET Quantity=Quantity+%d WHERE Name=\'%s\';", quantity_for_refill, name_of_object_for_refill);
+//            PreparedStatement preparedStatement = dbcon.connection.prepareStatement(sql);
+//            int rows = preparedStatement.executeUpdate(sql);
+//            System.out.println("Materials were refilled successfully!");
+//            System.out.printf("%d rows updated", rows);
+//            preparedStatement.close();
+//        } catch (Exception ex) {
+//            System.out.println("Connection failed...");
+//            ex.printStackTrace();
+//        }
+//        dbcon.closeConnections();
+//    }
+    //Admin's method
+//    public void createTheNewMaterial() throws ClassNotFoundException, SQLException, IOException {
+//        try {
+//            dbcon.getConnectionToDB();
+//            System.out.println("Now you will need to enter the required information for new material");
+//            System.out.println("Enter new ID: ");
+//            int idm = sc.nextInt();
+//            System.out.println("\nEnter Name: ");
+//            String name = sc.next();
+//            System.out.println();
+//            System.out.println("Enter Brand: ");
+//            String brand = sc.next();
+//            System.out.println("Enter Description: ");
+//            String space = sc.nextLine();
+//            String descr = sc.nextLine();
+//            System.out.println("\nEnter Quantity: ");
+//            int quantity = sc.nextInt();
+//            System.out.println("Enter Price: ");
+//            int price = sc.nextInt();
+//            System.out.println("Now, please enter the information for the supplier of added material");
+//            System.out.println("Do you want to add a new supplier or choose the existing one?");
+//            System.out.println("1-Add new supplier for this material");
+//            System.out.println("2-Choose the existing supplier");
+//            int choice = sc.nextInt();
+//            switch (choice) {
+//                case 1:
+//                    System.out.println("Now you will need to enter the required information for new supplier");
+//                    int SIDs = getLS().size() + 1;
+//                    System.out.println("\nEnter Supplier Name: ");
+//                    String nameOfNewSupplier = sc.next();
+//                    System.out.println("\nEnter Surname: ");
+//                    String surnameOfNewSupplier = sc.next();
+//                    System.out.println("Enter Phone: ");
+//                    String phoneOfNewSupplier = sc.next();
+//                    System.out.println("Enter Address: ");
+//                    String spaceV2 = sc.nextLine();
+//                    String addressOfNewSupplier = sc.nextLine();
+//                    createSupplier(SIDs, nameOfNewSupplier, surnameOfNewSupplier, phoneOfNewSupplier, addressOfNewSupplier);
+//                    createMaterial(idm, name, brand, descr, quantity, price, nameOfNewSupplier, surnameOfNewSupplier, phoneOfNewSupplier, addressOfNewSupplier, SIDs);
+//                    final String sqlForCreatingNewSupplier = String.format(
+//                            "INSERT suppliers(idsupplier,SupplierName, Surname, Phone, Adress) VALUES (%d,\'%s\',\'%s\',\'%s\',\'%s\');",
+//                            SIDs, nameOfNewSupplier, surnameOfNewSupplier, phoneOfNewSupplier, addressOfNewSupplier
+//                    );
+//                    PreparedStatement supplierCreatorDB = dbcon.connection.prepareStatement(sqlForCreatingNewSupplier);
+//                    supplierCreatorDB.executeUpdate(sqlForCreatingNewSupplier);
+//                    final String sqlBasedOnCNM = String.format(
+//                            sqlForCreatingNewMaterial,
+//                            idm, name, brand, descr, quantity, price
+//                    );
+//                    PreparedStatement materialCreatorDB = dbcon.connection.prepareStatement(sqlBasedOnCNM);
+//                    materialCreatorDB.executeUpdate();
+//                    final String sqlBasedOnMCBSM = String.format(
+//                            sqlForMakingConnectionBetweenSupAndMat,
+//                            idm, SIDs
+//                    );
+//                    PreparedStatement materialWithSupplierConnector = dbcon.connection.prepareStatement(sqlBasedOnMCBSM);
+//                    materialWithSupplierConnector.executeUpdate();
+//                    dbcon.closeConnections();
+//                    System.out.println("==================MAterials========================");
+//                    getAllMaterials();
+//                    System.out.println("===============Sups===============================");
+//                    getAllInfoAboutSuppliers();
+//                    break;
+//                case 2:
+//                    getAllInfoAboutSuppliers();
+//                    System.out.println("Choose the existing supplier ID for the new material: ");
+//                    int choosenID = sc.nextInt();
+//                    if (choosenID <= getLS().size() && choosenID > 0) {
+//                        createMaterial(
+//                                idm,
+//                                name,
+//                                brand,
+//                                descr,
+//                                quantity,
+//                                price,
+//                                getSupByID(choosenID).getSupplierName(),
+//                                getSupByID(choosenID).getSupplierSurname(),
+//                                getSupByID(choosenID).getSupplierPhone(),
+//                                getSupByID(choosenID).getSupplierAdress(),
+//                                getSupByID(choosenID).getSupplierId()
+//                        );
+//                        final String sqlBasedOnCNMES = String.format(
+//                                sqlForCreatingNewMaterial,
+//                                idm, name, brand, descr, quantity, price
+//                        );
+//                        PreparedStatement materialCDB = dbcon.connection.prepareStatement(sqlBasedOnCNMES);
+//                        materialCDB.executeUpdate();
+//                        final String sqlBasedOnMCBESM = String.format(
+//                                sqlForMakingConnectionBetweenSupAndMat,
+//                                idm, choosenID
+//                        );
+//                        PreparedStatement materialWSC = dbcon.connection.prepareStatement(sqlBasedOnMCBESM);
+//                        materialWSC.executeUpdate();
+//                        dbcon.closeConnections();
+//                        System.out.println("==================MAterials========================");
+//                        getAllMaterials();
+//                        System.out.println("===============Sups===============================");
+//                        getAllInfoAboutSuppliers();
+//                    }
+//                    break;
+//            }
+//        } catch (SQLException throwable) {
+//            throwable.printStackTrace();
+//        }
+//    }
     public List<Material>searchMaterialByBrand() {
         Set<String> brandsSet = new HashSet<String>();
         HashMap<Integer, String> brandHash = new HashMap<>();

@@ -15,4 +15,5 @@ public class Cashier extends TransactionWorker {
         createAllMaterials();
         createAllSuppliers();
     }
+
 }

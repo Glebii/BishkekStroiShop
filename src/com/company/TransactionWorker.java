@@ -13,6 +13,7 @@ import java.util.*;
     Map<Integer,Integer> soldMaterials = new HashMap<>();
     Scanner sc = new Scanner(System.in);
 
+
     private class Transaction {
         private int transactionId;
         private String nameOfMaterial;

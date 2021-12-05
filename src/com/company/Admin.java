@@ -6,5 +6,6 @@ import java.sql.SQLException;
 public class Admin extends Cashier{
     Admin(int dbId, String dbName, int Age) throws SQLException, IOException, ClassNotFoundException {
         super(dbId, dbName, Age);
+        System.out.println("For Jibek");
     }
 }

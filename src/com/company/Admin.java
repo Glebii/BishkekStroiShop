@@ -10,13 +10,16 @@ import java.util.function.Predicate;
 public class Admin extends Cashier{
     Admin(int dbId, String dbName, int Age) throws SQLException, IOException, ClassNotFoundException {
         super(dbId, dbName, Age);
-        System.out.println("For Jibek");
     }
-    //Transaction's methods
+    protected void setName(String name){
+        this.Name = name;
+    }
+    protected String getName(){
+        return this.Name;
+    }
 
     //Supplier's methods
     protected void supplierAdd() throws  SQLException {
-
         try{
             dbcon.getConnectionToDB();
             Scanner in = new Scanner(System.in);

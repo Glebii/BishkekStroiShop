@@ -87,7 +87,7 @@ import java.util.*;
         }
     }
 
-    public void makeASale() throws SQLException, IOException, ClassNotFoundException {
+    protected void makeASale() throws SQLException, IOException, ClassNotFoundException {
 
         List<MaterialWorker.Material> requiredMaterials = new ArrayList<>(searchMaterialByBrand());
         System.out.print("Выберите материал для покупки,введя его ID номер: ");
@@ -145,7 +145,7 @@ import java.util.*;
 
     }
 
-    public void postoperativeBehavior(int secondChoice) throws SQLException, IOException, ClassNotFoundException {
+    private void postoperativeBehavior(int secondChoice) throws SQLException, IOException, ClassNotFoundException {
         if (secondChoice == 1) {
             makeASale();
         }
@@ -176,7 +176,7 @@ import java.util.*;
             soldMaterials.clear();
         }
     }
-    public void payment(int money) throws SQLException, IOException, ClassNotFoundException {
+    private void payment(int money) throws SQLException, IOException, ClassNotFoundException {
         if(money<0){
             System.out.println("Введено некорректное значение суммы,проведите повторный ввод!");
             postoperativeBehavior(3);
@@ -212,7 +212,7 @@ import java.util.*;
 
         }
     }
-    public void rollingBackChanges() throws SQLException, IOException, ClassNotFoundException {
+    private void rollingBackChanges() throws SQLException, IOException, ClassNotFoundException {
         for (Map.Entry<Integer,Integer> e: soldMaterials.entrySet()) {
             MaterialWorker.Material m = searchMatById(e.getKey());
             dbcon.getConnectionToDB();
@@ -223,7 +223,7 @@ import java.util.*;
             m.setQuantity(m.getQuantity()+e.getValue());
         }
     }
-        public String getTime(){
+        protected String getTime(){
         String YMD = String.join(
                 "-",
                 String.valueOf(ZonedDateTime.now().getYear()),

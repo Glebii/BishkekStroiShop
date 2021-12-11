@@ -73,11 +73,12 @@ import java.util.List;
         }
         dbcon.closeConnections();
     }
-    protected void getAllInfoAboutSuppliers(){
-        for(Supplier s: LS){
-            s.getInfoAboutSup();
-        }
-    }
+    //Admin's method
+//    protected void getAllInfoAboutSuppliers(){
+//        for(Supplier s: LS){
+//            s.getInfoAboutSup();
+//        }
+//    }
     protected Supplier getSupByID(int id){
         Supplier requiredSup = null;
         for (Supplier s:

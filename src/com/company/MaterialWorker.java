@@ -138,7 +138,7 @@ abstract class MaterialWorker extends SuppliersWorker{
                     "left join suppliers on materials_has_suppliers.suppliers_idsupplier = suppliers.idsupplier;";
             ResultSet res = dbcon.statement.executeQuery(SQL);
             res.beforeFirst();
-            while (res.next()) {
+            while (res.next()){
                 int id = res.getInt("idmaterial");
                 String name = res.getString("Name");
                 String brand = res.getString("Brand");

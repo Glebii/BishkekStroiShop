@@ -8,13 +8,40 @@ import java.util.Scanner;
 import java.util.function.Predicate;
 
 public class Admin extends Cashier{
-    Admin(int dbId, String dbName, int Age) throws SQLException, IOException, ClassNotFoundException {
-        super(dbId, dbName, Age);
-        System.out.println("For Jibek");
+    Admin(int dbId, String dbName) throws SQLException, IOException, ClassNotFoundException {
+        super(dbId, dbName);
+    }
+    //Add new user
+    protected void addNewUser() throws SQLException, IOException, ClassNotFoundException {
+        System.out.println(" fname:");
+        String fname = sc.nextLine();
+        System.out.println(" lname:");
+        String lname = sc.nextLine();
+        System.out.println(" login:");
+        String login = sc.nextLine();
+        System.out.println(" password:");
+        String password = sc.nextLine();
+        System.out.println(" position: Администратор или Кассир");
+        String position = sc.nextLine();
+
+        dbcon.getConnectionToDB();
+        String SQL = String.format("Insert INTO users Values(\'%s\',\'%s\',\'%s\',\'%s\',\'%s\');",fname,lname,password,login,position);
+
+        PreparedStatement supplierCreatorDB = dbcon.connection.prepareStatement(SQL);
+        supplierCreatorDB.executeUpdate(SQL);
+        System.out.println("Done...");
+        dbcon.closeConnections();
+
     }
     //Transaction's methods
 
+
     //Supplier's methods
+    protected void getAllInfoAboutSuppliers(){
+        for(Supplier s: getLS()){
+            s.getInfoAboutSup();
+        }
+    }
     protected void supplierAdd() throws  SQLException {
 
         try{

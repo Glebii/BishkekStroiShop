@@ -42,7 +42,11 @@ abstract class SuppliersWorker {
         public String getSupplierAdress() { return SupplierAdress; }
         public void getInfoAboutSup()
         {
-            System.out.printf("\nSupplier id: %d\nSupplier name: %s\nSupplier surname: %s\nSupplier phone: %s\nSupplier adress: %s\n",
+            System.out.printf("\nLieferanten-ID: %d\n" +
+                            "Name des Lieferanten: %supplier\n" +
+                            "Nachname des Lieferanten: %s\n" +
+                            "Lieferantentelefon: %s\n" +
+                            "Lieferantenadresse: %Lieferant",
                     this.SupplierId,this.SupplierName,this.SupplierSurname,this.SupplierPhone,this.SupplierAdress);
         }
         //Setters
@@ -66,11 +70,11 @@ abstract class SuppliersWorker {
         ResultSet res = dbcon.statement.executeQuery("Select * From suppliers");
         res.beforeFirst();
         while (res.next()) {
-            int ids = res.getInt("idsupplier");
-            String supname = res.getString("SupplierName");
-            String supsurname = res.getString("Surname");
-            String phone = res.getString("Phone");
-            String adress = res.getString("Adress");
+            int ids = res.getInt("id lieferant");
+            String supname = res.getString("Name des Lieferanten");
+            String supsurname = res.getString("Familienname");
+            String phone = res.getString("Telefon");
+            String adress = res.getString("Anschrift");
             createSupplier(ids,supname,supsurname,phone,adress);
         }
         dbcon.closeConnections();
@@ -92,14 +96,14 @@ abstract class SuppliersWorker {
         return requiredSup;
     }
      protected void getSupByID(){
-         System.out.println("Введите Id нужного поставщика:");
+         System.out.println("Geben Sie die ID des gewünschten Anbieters ein:");
          int requiredSupId=sc.nextInt();
          for (Supplier s:
                  LS) {
              if(s.getSupplierId()==requiredSupId){
                 s.getInfoAboutSup();
              }
-             else System.out.println("К соажлению поставщика с таким Id не найдено");
+             else System.out.println("Leider wurde kein Anbieter mit dieser ID gefunden.");
          }
 
      }

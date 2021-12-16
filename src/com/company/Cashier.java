@@ -25,7 +25,16 @@ public class Cashier extends TransactionWorker implements MenuShower {
 
     @Override
     public void getMenu() throws InterruptedException, SQLException, IOException, ClassNotFoundException {
-        System.out.println("Чего желаете?\n1) Увидеть все материалы\n2) Посмотреть материал по Id\n3) Посмотреть материал по бренду\n4) Увидеть всех поставщиков\n5) Посмотреть данные поставщика по Id\n6) Сделать продажу\n7) Увидеть все продажи\n8) Завершить работу\nВведите номер операции:");
+        System.out.println("Was wünschen Sie sich?\n" +
+                "1) Alle Materialien anzeigen\n" +
+                "2) Material nach Id anzeigen\n" +
+                "3) Material nach Marke anzeigen\n" +
+                "4) Alle Lieferanten anzeigen\n" +
+                "5) Lieferantendaten nach ID anzeigen\n" +
+                "6) Verkauf tätigen\n" +
+                "7) Alle Verkäufe anzeigen\n" +
+                "8) Arbeit beenden\n" +
+                "Geben Sie die Operationsnummer ein:");
         Scanner sc = new Scanner(System.in);
         int operationNumber = sc.nextInt();
         switch (operationNumber){
@@ -64,9 +73,9 @@ public class Cashier extends TransactionWorker implements MenuShower {
                 Thread.sleep(2000);
                 getMenu();
             case 8:
-                System.out.printf("Отличная работа ,%s",getName());
+                System.out.printf("Gute Arbeit ,%s !",getName());
             default:
-                System.out.println("Номер операции введен не верно, попробуйте снова!");
+                System.out.println("Die Operationsnummer ist falsch eingegeben,versuchen Sie es erneut!");
                 getMenu();
                 break;
 

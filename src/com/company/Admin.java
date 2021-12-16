@@ -5,36 +5,58 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.function.Predicate;
 
-public class Admin extends Cashier{
+public class Admin<PasswordEncoder> extends Cashier{
     Admin(int dbId, String dbName) throws SQLException, IOException, ClassNotFoundException {
         super(dbId, dbName);
     }
 
     @Override
     public void getMenu() throws InterruptedException, SQLException, IOException, ClassNotFoundException {
-        System.out.println("Чего желаете?\n" +
-                "Материалы"+
-                "1)  Увидеть все материалы\n" +
-                "2)  Посмотреть материал по Id\n" +
-                "3)  Найти материалы соответсвующие по бренду\n" +
-                "4)  Удалить материал\n" +
-                "5)  Пополнить количество материалов\n" +
-                "6)  Изменить параметры материала\n" +
-                "7)  Добавить новый материал\n" +
-                "Поставщики"+
-                "8)  Увидеть всех поставщиков\n" +
-                "9)  Посмотреть данные поставщика по Id\n"+
-                "10) Добавить нового поставщика\n"+
-                "11) Изменить параметры поставщика\n"+
-                "12) Удалить поставщика\n"+
-                "Продажи"+
-                "13) Сделать продажу\n" +
-                "14) Увидеть все продажи\n"+
-                "15) Завершить работу\n"+
-                "Введите номер операции:");
+        System.out.println("Wählen Sie eine Option nach Nummer aus:\n" +
+                        "Werkstoffe"+
+                        "1) Alle Materialien sehen\n" +
+                        "2) Material nach Id anzeigen\n" +
+                        " 3) Finden Sie relevante Materialien nach Marke\n" +
+                        "4) Material entfernen\n" +
+                        "5) Materialmenge nachfüllen\n" +
+                        "6) Materialeinstellungen ändern\n" +
+                        "7) Neues Material hinzufügen\n" +
+                        "Lieferanten"+
+                        "8) Alle Anbieter anzeigen\n" +
+                        "9) Lieferantendaten nach Id anzeigen\n"+
+                        "10) Neuen Anbieter hinzufügen\n"+
+                        "11) Kreditoreneinstellungen ändern\n"+
+                        "12) Anbieter entfernen\n"+
+                        "Verkäufe"+
+                        "13) Verkauf tätigen\n" +
+                        "14) Alle Verkäufe sehen\n"+
+                        "15) Fügt einen neuen Benutzer hinzu\n"+
+                        "16) Herunterfahren\n"+
+                        "Geben Sie die Operationsnummer ein:");
+
+//                "Материалы"+
+//                "1)  Увидеть все материалы\n" +
+//                "2)  Посмотреть материал по Id\n" +
+//                "3)  Найти материалы соответсвующие по бренду\n" +
+//                "4)  Удалить материал\n" +
+//                "5)  Пополнить количество материалов\n" +
+//                "6)  Изменить параметры материала\n" +
+//                "7)  Добавить новый материал\n" +
+//                "Поставщики"+
+//                "8)  Увидеть всех поставщиков\n" +
+//                "9)  Посмотреть данные поставщика по Id\n"+
+//                "10) Добавить нового поставщика\n"+
+//                "11) Изменить параметры поставщика\n"+
+//                "12) Удалить поставщика\n"+
+//                "Продажи"+
+//                "13) Сделать продажу\n" +
+//                "14) Увидеть все продажи\n"+
+//                "15) Добавит нового пользователя\n"+
+//                "16) Завершить работу\n"+
 
         Scanner sc = new Scanner(System.in);
         int operationNumber = sc.nextInt();
@@ -109,10 +131,15 @@ public class Admin extends Cashier{
                 getMenu();
                 break;
             case 15:
-                System.out.printf("Отличная работа ,%s", getName());
+                addNewUser();
+                Thread.sleep(2000);
+                getMenu();
+                break;
+            case 16:
+                System.out.printf("Gute Arbeit ,%s", getName());
                 break;
             default:
-                System.out.println("Номер операции введен не верно, попробуйте снова!");
+                System.out.println("Die eingegebene Optionsnummer ist falsch, versuchen Sie es erneut!");
                 getMenu();
                 break;
 
@@ -122,26 +149,61 @@ public class Admin extends Cashier{
 
     //Add new user
     protected void addNewUser() throws SQLException, IOException, ClassNotFoundException {
-        System.out.println(" fname:");
+        System.out.println("So erstellen Sie einen neuen Benutzer:");
+        System.out.println("Geben Sie Ihren Voramen ein: ");
         String fname = sc.nextLine();
-        System.out.println(" lname:");
+        System.out.println("Geben Sie Ihren Nachnamen ein: ");
         String lname = sc.nextLine();
-        System.out.println(" login:");
+        System.out.println("Login eingeben: ");
         String login = sc.nextLine();
-        System.out.println(" password:");
-        String password = sc.nextLine();
-        System.out.println(" position: Администратор или Кассир");
+        System.out.println(" Möchten Sie ein Passwort generieren? \n1-Ja 2-Nein");
+        int ansToGenerateNewPass = sc.nextInt();
+        String password = null;
+        switch (ansToGenerateNewPass){
+            case 1:
+                password = new Random().ints(10, 33, 122)
+                        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
+                System.out.println(password);
+                sc.nextLine();
+                break;
+            case 2:
+                boolean creatingPassProcess = true;
+
+                sc.nextLine();
+
+                while(creatingPassProcess){
+                    System.out.println("Das Passwort muss aus mindestens 8 Zeichen bestehen und Groß- und Kleinbuchstaben und Ziffern enthalten, darf aber aus Sicherheitsgründen keinen Vor- oder Nachnamen enthalten!");
+                    System.out.println("Geben Sie Ihr Passwort ein:");
+                    password = sc.nextLine();
+                    boolean hasNumber = password.matches(".*\\d+.*");
+                    boolean hasUppercase = !password.equals(password.toLowerCase());
+                    boolean hasLowercase = !password.equals(password.toUpperCase());
+                    boolean hasName = !(password.contains(fname) || password.contains(lname));
+                    boolean hasEightSymbol = (password.length() >= 8);
+
+                    if( hasUppercase == true && hasNumber == true && hasLowercase == true && hasName == true && hasEightSymbol == true){
+                        System.out.println("Ihr Passwort ist nicht sicher, versuchen Sie es erneut!");
+                        creatingPassProcess = false;
+                    }
+                }
+                break;
+            default:
+                System.out.println("Die Operation ist falsch, versuchen Sie es erneut!");
+                addNewUser();
+        }
+
+        System.out.println(" Position eingeben (Administrator/Kassierer): ");
         String position = sc.nextLine();
 
         dbcon.getConnectionToDB();
-        String SQL = String.format("Insert INTO users Values(\'%s\',\'%s\',\'%s\',\'%s\',\'%s\');",fname,lname,password,login,position);
+        String SQL = String.format("Insert INTO users(FName,LName,Login,Password_,Position) Values(\'%s\',\'%s\',\'%s\',\'%s\',\'%s\');",fname,lname,password,login,position);
 
         PreparedStatement supplierCreatorDB = dbcon.connection.prepareStatement(SQL);
         supplierCreatorDB.executeUpdate();
-        System.out.println("Done...");
+        System.out.println("Der Benutzer wurde erfolgreich hinzugefügt!");
         dbcon.closeConnections();
-
     }
+
     //Transaction's methods
 
 
@@ -151,14 +213,14 @@ public class Admin extends Cashier{
         try{
             dbcon.getConnectionToDB();
             Scanner in = new Scanner(System.in);
-            System.out.println("Now you will need to enter the required information for new suplier");
-            System.out.println("\nEnter name of supplier: ");
+            System.out.println("Jetzt müssen Sie die erforderlichen Informationen für den neuen Lieferanten eingeben.");
+            System.out.println("\nGeben Sie den Namen des Lieferanten ein: ");
             String names = in.nextLine();
-            System.out.println("\nEnter surname of supplier: ");
+            System.out.println("\nGeben Sie den Nachname des Lieferanten ein: ");
             String surname = in.nextLine();
-            System.out.println("\nEnter phone of supplier: ");
+            System.out.println("\nGeben Sie die Telefonnummer des Lieferanten ein: ");
             String phone = in.nextLine();
-            System.out.println("Enter address of supplier: ");
+            System.out.println("\nGeben Sie die Adresse des Lieferanten ein: ");
             String adress = in.nextLine();
             int ids = getLS().size() +1;
             //        int ids = LS.size() +1;
@@ -171,11 +233,11 @@ public class Admin extends Cashier{
 
             PreparedStatement supplierCreatorDB = dbcon.connection.prepareStatement(SQL);
             supplierCreatorDB.executeUpdate(SQL);
-            System.out.println("Done...");
+            System.out.println("Der neue Anbieter wurde erfolgreich hinzugefügt!");
             dbcon.closeConnections();
         }
         catch (Exception ex) {
-            System.out.println("Connection failed...");
+            System.out.println("Verbindung fehlgeschlagen...");
             ex.printStackTrace();}
         dbcon.closeConnections();
     }
@@ -185,7 +247,7 @@ public class Admin extends Cashier{
         try
         { dbcon.getConnectionToDB();
             Scanner scann = new Scanner(System.in);
-            System.out.println("Enter id to delete supplier: ");
+            System.out.println("geben Sie den ID ein, um Lieferant zu löschen:");
             int suplirsId_to_delete = scann.nextInt();
             Iterator<Supplier> supplierIterator= getLS().iterator();
             while(supplierIterator.hasNext()) {
@@ -197,12 +259,11 @@ public class Admin extends Cashier{
 
             String sql = String.format("DELETE FROM suppliers WHERE idsupplier = %d;", suplirsId_to_delete);
             int rows = dbcon.statement.executeUpdate(sql);
-            System.out.println("Getting record...");
-            System.out.printf("%d rows deleted ", rows);
+            System.out.println("Der Anbieter wurde erfolgreich entfernt!");
             dbcon.closeConnections();
         }
         catch (Exception ex) {
-            System.out.println("Connection failed...");
+            System.out.println("Verbindung fehlgeschlagen...");
             ex.printStackTrace();}
         dbcon.closeConnections();
     }
@@ -211,18 +272,18 @@ public class Admin extends Cashier{
         Scanner in = new Scanner(System.in);
         getAllSuppliers();
         dbcon.getConnectionToDB();
-        System.out.print("\n Enter id of updating material: ");
+        System.out.print("\n Geben Sie die ID des Aktualisierungsmaterials ein:");
         int id_of_updating_suplier = in.nextInt();
         String space = in.nextLine();
         System.out.print(
-                "\n Enter the column name to update\n"  +
-                        "1)  SupplierName;\n" +
-                        "2)  Surname;\n" +
-                        "3)  Phone;\n" +
-                        "4)  Adress; :  "
+                "\n Geben Sie den zu aktualisierenden Spaltennamen ein\n"  +
+                        "Der Name des Lieferanten - SupplierName;\n" +
+                        "Der Nachname -  Surname;\n" +
+                        "Die Telefonnummer - Phone;\n" +
+                        "Die Adresse - Adress :  "
         );
         String colName_for_updating = in.nextLine();
-        System.out.print("\n Enter new value: ");
+        System.out.print("\nGeben Sie einen neuen Wert ein: ");
         String nValue_String = in.nextLine();
 
         if (
@@ -237,11 +298,11 @@ public class Admin extends Cashier{
                     else if(colName_for_updating.equals("Adress")){ s.setSupplierAdress(nValue_String); }
                 }
             }
-            System.out.println("Updating successful done...");
+            System.out.println("Aktualisierung erfolgreich abgeschlossen...");
         }
         else
         {
-            System.out.println("The column not found! Please, try again!");
+            System.out.println("Seite nicht gefunden! Bitte versuchen Sie es erneut!");
             updateSupplier();
         }
 
@@ -250,13 +311,12 @@ public class Admin extends Cashier{
             String sql = String.format("UPDATE suppliers  SET %s = \'%s\' WHERE idsupplier = %d", colName_for_updating, nValue_String, id_of_updating_suplier);
             PreparedStatement preparedStatement = dbcon.connection.prepareStatement(sql);
             int rows = preparedStatement.executeUpdate(sql);
-            System.out.println("Changes were written successfully!");
-            System.out.printf("%d rows added", rows);
+            System.out.println("Änderungen wurden erfolgreich geschrieben!");
             preparedStatement.close();
         }
         catch (Exception ex)
         {
-            System.out.println("Connection failed...");
+            System.out.println("Verbindung fehlgeschlagen...");
             ex.printStackTrace();
         }
         dbcon.connection.close();
@@ -268,37 +328,37 @@ public class Admin extends Cashier{
     public void createTheNewMaterial() throws ClassNotFoundException, SQLException, IOException {
         try {
             dbcon.getConnectionToDB();
-            System.out.println("Now you will need to enter the required information for new material");
-            System.out.println("Enter new ID: ");
+            System.out.println("Jetzt müssen Sie die erforderlichen Informationen für neues Material eingeben.");
+            System.out.println("ID: ");
             int idm = sc.nextInt();
-            System.out.println("\nEnter Name: ");
+            System.out.println("\nName: ");
             String name = sc.next();
             System.out.println();
-            System.out.println("Enter Brand: ");
+            System.out.println("\nBrand: ");
             String brand = sc.next();
-            System.out.println("Enter Description: ");
+            System.out.println("\nBeschreibung eingeben: ");
             String space = sc.nextLine();
             String descr = sc.nextLine();
-            System.out.println("\nEnter Quantity: ");
+            System.out.println("\nMenge eingeben: ");
             int quantity = sc.nextInt();
-            System.out.println("Enter Price: ");
+            System.out.println("\nPreis eingeben: ");
             int price = sc.nextInt();
-            System.out.println("Now, please enter the information for the supplier of added material");
-            System.out.println("Do you want to add a new supplier or choose the existing one?");
-            System.out.println("1-Add new supplier for this material");
-            System.out.println("2-Choose the existing supplier");
+            System.out.println("Geben Sie nun bitte die Informationen für den Lieferanten des hinzugefügten Materials ein.");
+            System.out.println("Möchten Sie einen neuen Lieferanten hinzufügen oder den bestehenden auswählen?");
+            System.out.println("1-Neuen Lieferanten für dieses Material hinzufügen");
+            System.out.println("2-Wählen Sie den bestehenden Lieferanten");
             int choice = sc.nextInt();
             switch (choice) {
                 case 1:
-                    System.out.println("Now you will need to enter the required information for new supplier");
+                    System.out.println("Jetzt müssen Sie die erforderlichen Informationen für den neuen Lieferanten eingeben.");
                     int SIDs = getLS().size() + 1;
-                    System.out.println("\nEnter Supplier Name: ");
+                    System.out.println("\nGeben Sie den Namen des Lieferanten ein:  ");
                     String nameOfNewSupplier = sc.next();
-                    System.out.println("\nEnter Surname: ");
+                    System.out.println("\nGeben Sie den Nachname des Lieferanten ein:  ");
                     String surnameOfNewSupplier = sc.next();
-                    System.out.println("Enter Phone: ");
+                    System.out.println("\nGeben Sie die Telefonnummer des Lieferanten ein: ");
                     String phoneOfNewSupplier = sc.next();
-                    System.out.println("Enter Address: ");
+                    System.out.println("\nGeben Sie die Adresse des Lieferanten ein:  ");
                     String spaceV2 = sc.nextLine();
                     String addressOfNewSupplier = sc.nextLine();
                     createSupplier(SIDs, nameOfNewSupplier, surnameOfNewSupplier, phoneOfNewSupplier, addressOfNewSupplier);
@@ -329,7 +389,7 @@ public class Admin extends Cashier{
                     break;
                 case 2:
                     getAllSuppliers();
-                    System.out.println("Choose the existing supplier ID for the new material: ");
+                    System.out.println("Wählen Sie die vorhandene Lieferanten-ID für das neue Material:");
                     int choosenID = sc.nextInt();
                     if (choosenID <= getLS().size() && choosenID > 0) {
                         createMaterial(
@@ -358,9 +418,9 @@ public class Admin extends Cashier{
                         PreparedStatement materialWSC = dbcon.connection.prepareStatement(sqlBasedOnMCBESM);
                         materialWSC.executeUpdate();
                         dbcon.closeConnections();
-                        System.out.println("==================Materials========================");
+                        System.out.println("==================MVeröffentlichung========================");
                         getAllMaterials();
-                        System.out.println("===============Sups===============================");
+                        System.out.println("===============Anbieter===============================");
                         getAllSuppliers();
                     }
                     break;
@@ -373,9 +433,9 @@ public class Admin extends Cashier{
     public void materialsRefillUpdate() throws SQLException, IOException, ClassNotFoundException {
         dbcon.getConnectionToDB();
         Scanner sc = new Scanner(System.in);
-        System.out.print("Enter material's name which you want to refill: ");
+        System.out.print("Geben Sie den Namen des Materials ein, das Sie nachfüllen möchten:");
         String name_of_object_for_refill = sc.nextLine();
-        System.out.print("\n Enter the quantity to refill: ");
+        System.out.print("\n Geben Sie die Menge zum Nachfüllen ein: ");
         int quantity_for_refill = sc.nextInt();
         for (Material m : getLM())
         {
@@ -388,11 +448,10 @@ public class Admin extends Cashier{
             String sql = String.format("UPDATE materials SET Quantity=Quantity+%d WHERE Name=\'%s\';", quantity_for_refill, name_of_object_for_refill);
             PreparedStatement preparedStatement = dbcon.connection.prepareStatement(sql);
             int rows = preparedStatement.executeUpdate(sql);
-            System.out.println("Materials were refilled successfully!");
-            System.out.printf("%d rows updated", rows);
+            System.out.println("Materialien wurden erfolgreich nachgefüllt!");
             preparedStatement.close();
         } catch (Exception ex) {
-            System.out.println("Connection failed...");
+            System.out.println("Verbindung fehlgeschlagen...");
             ex.printStackTrace();
         }
         dbcon.closeConnections();
@@ -402,7 +461,7 @@ public class Admin extends Cashier{
         try
         {
             dbcon.getConnectionToDB();
-            System.out.println("Enter name to delete material: ");
+            System.out.println("Geben Sie einen Namen ein, um Material zu löschen:");
             String name_of_object = sc.nextLine();
 
             Predicate<Material> deleteMaterial = (Material x) -> x.getName().equals(name_of_object);
@@ -411,15 +470,14 @@ public class Admin extends Cashier{
 
             String sql = String.format("DELETE FROM materials WHERE Name=\'%s\';", name_of_object);
             int rows = dbcon.statement.executeUpdate(sql);
-            System.out.println("Getting record...");
-            System.out.printf("%d rows deleted ", rows);
+            System.out.println("Das Material wurde entfernt!");
             getAllMaterials();
             dbcon.closeConnections();
         }
 
         catch (Exception ex)
         {
-            System.out.println("Connection failed...");
+            System.out.println("Verbindung fehlgeschlagen...");
             ex.printStackTrace();
         }
         dbcon.closeConnections();
@@ -430,20 +488,20 @@ public class Admin extends Cashier{
         String sql= "";
         Scanner sc = new Scanner(System.in);
 
-        System.out.print("\n Enter name of updating material: ");
+        System.out.print("\n Geben Sie den Namen des Aktualisierungsmaterials ein:");
         String Name_of_updating_material = sc.nextLine();
 
-        System.out.print("\n " +
-                "1)  Name;\n" +
-                "2)  Brand;\n" +
-                "3)  Description;\n" +
-                "4)  Quantity;\n" +
-                "5)  Price;\n" +
-                "Enter the column name to update:  ");
+        System.out.print("\n" +
+                        "1) Name\n" +
+                        "2) Marke\n" +
+                        "3) Beschreibung\n" +
+                        "4) Menge\n" +
+                        "5) Preis\n" +
+                        "Geben Sie den Spaltennamen ein, der aktualisiert werden soll: ");
         String colName_for_updating = sc.nextLine();
 
-        if (colName_for_updating.equals("Name") || colName_for_updating.equals("Brand") || colName_for_updating.equals("Description")) {
-            System.out.print("\n Enter new value: ");
+        if (colName_for_updating.equals("Name") || colName_for_updating.equals("Marke") || colName_for_updating.equals("Beschreibung")) {
+            System.out.print("\n Neuen Wert eingeben: ");
             String nValue_String = sc.nextLine();
 
             for (Material m : getLM())
@@ -452,26 +510,26 @@ public class Admin extends Cashier{
                     if(colName_for_updating.equals("Name")) {
                         m.setName(nValue_String);
                     }
-                    if(colName_for_updating.equals("Brand")){
+                    if(colName_for_updating.equals("Marke")){
                         m.setBrand(nValue_String);
                     }
-                    else if(colName_for_updating.equals("Description")){
+                    else if(colName_for_updating.equals("Beschreibung")){
                         m.setDescription(nValue_String);
                     }
                 }
-                else{ System.out.println("Материал не найден!"); }
+                else{ System.out.println("Kein Material gefunden!"); }
             }
             sql = String.format("UPDATE materials  SET %s=\'%s\' WHERE Name =\'%s\' ;", colName_for_updating, nValue_String, Name_of_updating_material);
 
 
         }
-        else if (colName_for_updating.equals("Quantity") || colName_for_updating.equals("Price")) {
+        else if (colName_for_updating.equals("Menge") || colName_for_updating.equals("Preis")) {
             int nValue_int_quantity = sc.nextInt();
             for (Material m : getLM()) {
                 if (m.getName().equals((Name_of_updating_material))) {
                     m.setQuantity(nValue_int_quantity);
                 }
-                else if(colName_for_updating.equals("Quantity")){
+                else if(colName_for_updating.equals("Menge")){
                     m.setQuantity(nValue_int_quantity);
                 }
                 else { m.setPrice(nValue_int_quantity);}
@@ -479,19 +537,16 @@ public class Admin extends Cashier{
             sql = String.format("UPDATE materials  SET %s =%d WHERE Name =\'%s\';", colName_for_updating, nValue_int_quantity, Name_of_updating_material);
 
         }
-        else { System.out.println("Column name not found! Please, try again!"); }
+        else { System.out.println("Seite nicht gefunden! Bitte versuchen Sie es erneut!"); }
 
         try {
-            System.out.println("sql: "+sql);
             PreparedStatement preparedStatement = dbcon.connection.prepareStatement(sql);
             int rows = preparedStatement.executeUpdate(sql);
-            System.out.println("Changes were written successfully!");
-            System.out.printf("%d rows added", rows);
+            System.out.println("Änderungen wurden erfolgreich geschrieben!");
             preparedStatement.close();
-            System.out.println("good");
 
         }
-        catch (Exception ex) { System.out.println("Connection failed..."); ex.printStackTrace(); }
+        catch (Exception ex) { System.out.println("Verbindung fehlgeschlagen..."); ex.printStackTrace(); }
 
         dbcon.closeConnections();
 

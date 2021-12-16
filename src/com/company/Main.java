@@ -8,7 +8,12 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
-        runApplication();
+
+
+        Admin cc = new Admin(34,"fasd");
+        cc.addNewUser();
+
+//        runApplication();
     }
 
 
@@ -20,9 +25,9 @@ public class Main {
         DBConnector dbcon = new DBConnector();
         for(int count = 1; count <= 3; count++) {
             Scanner scann = new Scanner(System.in);
-            System.out.println("login: ");
+            System.out.println("Geben Sie Ihr Login ein: ");
             String log = scann.nextLine();
-            System.out.println("password: ");
+            System.out.println("Geben Sie Ihr Passwort ein:");
             String pass = scann.nextLine();
 
             try {
@@ -38,19 +43,17 @@ public class Main {
 
                 res.beforeFirst();
                 if(!res.next()){
-                    System.out.println("Wrong password. Please, try again! ");
+                    System.out.println("Das Passwort wurde falsch eingegeben, bitte versuchen Sie es erneut!");
                     int chance = 3 - count;
-                    System.out.println("You have only " + chance + " trials left.");
+                    System.out.println("Sie haben nur noch " + chance + " Versuche.");
                     count++;
                     dbcon.closeConnections();
 
                 }
                 else{
-                    System.out.println("Alles gut! Ehhh!");
                     res.beforeFirst();
                     String position = null;
                     if(res.next()){ position = res.getString(1);}
-//                    System.out.println(position);
 
                     resForName.beforeFirst();
                     String name = null;
@@ -60,7 +63,7 @@ public class Main {
                     int Id = 0;
                     if(res.next()){ Id = res.getInt(1);}
 
-                    assert position != null : "Вы не занимаете никакую должность";
+                    assert position != null : "Sie bekleiden keine Position.";
                     usersPosition(Id,name,position);
 
                 }
@@ -68,19 +71,19 @@ public class Main {
                 e.printStackTrace();
             }
         }
-        System.out.println("Sie haben schon alle Chancen benutzt!");
+        System.out.println("Sie haben alle Chance genutzt!");
 
     }
 
 
     public static void usersPosition(int id,  String name,String position) throws SQLException, IOException, ClassNotFoundException, InterruptedException {
-        if(position.equals("Админстратор")){
+        if(position.equals("Administrator")){
             Admin administrator = new Admin(id,name);
 //            administrator.getMenu();
         }
-        else if(position.equals("Кассир")){
+        else if(position.equals("Kassier")){
             Cashier cashier = new Cashier(id,name);
-            System.out.printf("Добро пожаловать , %s!",cashier.getName());
+            System.out.printf("Herzlich willkommen, %s !",cashier.getName());
             cashier.getMenu();
 
         }

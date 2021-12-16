@@ -51,15 +51,15 @@ abstract class MaterialWorker extends SuppliersWorker{
         //Geters
         public void getInfo() {
             System.out.println("ID: "+this.id);
-            System.out.println("Name of material: "+ this.name);
-            System.out.println("Brand of Material: "+ this.brand);
-            System.out.println("Description of Material: "+ this.description);
-            System.out.println("Quantity of Material: "+ this.quantity);
-            System.out.println("Price of Material: "+this.price);
-            System.out.println("Supplier :"+this.supliers_name);
-            System.out.println("Suppliers surname: "+this.supliers_surname);
-            System.out.println("Suppliers phone: "+this.supliers_phone);
-            System.out.println("Suppliers address: "+this.supliers_adress);
+            System.out.println("Name des Materials:"+ this.name);
+            System.out.println("Marke des Materials: "+ this.brand);
+            System.out.println("Beschreibung des Materials: "+ this.description);
+            System.out.println("Menge des Materials: "+ this.quantity);
+            System.out.println("Preis des Materials: "+this.price);
+            System.out.println("Name desLieferants :"+this.supliers_name);
+            System.out.println("Nachname des Lieferanten: "+this.supliers_surname);
+            System.out.println("Lieferanten Telefon: "+this.supliers_phone);
+            System.out.println("Lieferantenadresse: "+this.supliers_adress);
             System.out.println("==========================================");
         }
         public int getId() {
@@ -158,27 +158,28 @@ abstract class MaterialWorker extends SuppliersWorker{
     public void getAllMaterials() {
         for (Material m : LM) {
             System.out.println("ID: " + m.getId());
-            System.out.println("Name: " + m.getName());
-            System.out.println("Brand: " + m.getBrand());
-            System.out.println("Descript: " + m.getDescription());
-            System.out.println("Quantity: " + m.getQuantity());
-            System.out.println("Price: " + m.getPrice());
-            System.out.println("Supliers name: " + m.getSupliersName());
-            System.out.println("Supliers surname: " + m.getSupliersSurname());
-            System.out.println("Supliers phone: " + m.getSupliersPhone());
-            System.out.println("Supliers adress: " + m.getSupliersAdress());
+            System.out.println("Name des Materials:" + m.getName());
+            System.out.println("Marke des Materials: " + m.getBrand());
+            System.out.println("Beschreibung des Materials: " + m.getDescription());
+            System.out.println("Menge des Materials: " + m.getQuantity());
+            System.out.println("Preis des Materials: " + m.getPrice());
+            System.out.println("Name desLieferants : " + m.getSupliersName());
+            System.out.println("Nachname des Lieferanten: " + m.getSupliersSurname());
+            System.out.println("Lieferanten Telefon: " + m.getSupliersPhone());
+            System.out.println("Lieferantenadresse: " + m.getSupliersAdress());
             System.out.println("\n=================================\n");
+
         }
     }
     public void searchMatById(){
-        System.out.println("Введите Id нужного материала:");
+        System.out.println("Geben Sie die ID des gewünschten Materials ein:");
         int requiredId = sc.nextInt();
         for (Material m:
                 LM) {
             if(m.getId()==requiredId){
                 m.getInfo();
             }
-            else System.out.println("К сожалению мы не нашли материал с таким Id");
+            else System.out.println("Leider haben wir kein Material mit dieser Id gefunden.");
         }
     }
     public void searchMaterialByBrand() {
@@ -193,7 +194,7 @@ abstract class MaterialWorker extends SuppliersWorker{
             System.out.printf("%d) " + brand + "\n", counter += 1);
             brandHash.put(counter, brand);
         }
-        System.out.print("\nВыберите бренд строительного материала соответсвующего нужному вам материалу , введя соответственный номер: ");
+        System.out.print("\nWählen Sie die Marke des Baumaterials aus, das dem gewünschten Material entspricht, indem Sie die entsprechende Nummer eingeben: ");
         int choice = sc.nextInt();
         String brand = brandHash.get(choice);
         for (Material m : LM) {
@@ -201,7 +202,7 @@ abstract class MaterialWorker extends SuppliersWorker{
                 m.getInfo();
             }
         }
-        System.out.println("↑ Все материалы с соответствующим брендом представлены выше ↑");
+        System.out.println("↑ Alle Materialien mit der entsprechenden Marke sind oben dargestellt ↑");
 
     }
 
@@ -217,7 +218,7 @@ abstract class MaterialWorker extends SuppliersWorker{
             System.out.printf("%d) " + brand + "\n", counter += 1);
             brandHash.put(counter, brand);
         }
-        System.out.print("\nВыберите бренд строительного материала соотвеветсвующего нужному вам материалу , введя соответственный номер: ");
+        System.out.print("\nWählen Sie die Marke des Baumaterials aus, das dem gewünschten Material entspricht, indem Sie die entsprechende Nummer eingeben:");
         int choice = sc.nextInt();
         String brand = brandHash.get(choice);
         List<Material> materialsWithRequiredBrand = new ArrayList<>();

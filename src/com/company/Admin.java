@@ -57,7 +57,7 @@ public class Admin extends Cashier{
                 System.out.printf("Отличная работа ,%s", getName());
                 break;
             case 9:
-                System.out.println("привет");
+                System.out.println("Вот как надо было");
                 break;
             default:
                 System.out.println("Номер операции введен не верно, попробуйте снова!");

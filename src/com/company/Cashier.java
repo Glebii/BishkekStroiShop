@@ -3,9 +3,14 @@ package com.company;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class Cashier extends TransactionWorker {
-    private int Id;
-    private String Name;
+public class Cashier extends TransactionWorker implements MenuShower {
+    private final int Id;
+    private final String Name;
+    public String getName() {
+        return this.Name;
+    }
+
+
 
     Cashier(int dbId , String dbName) throws SQLException, IOException, ClassNotFoundException {
         this.Id = dbId;
@@ -16,4 +21,9 @@ public class Cashier extends TransactionWorker {
         createAllSuppliers();
     }
 
+
+    @Override
+    public void getMenu() {
+
+    }
 }

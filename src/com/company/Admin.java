@@ -12,6 +12,13 @@ public class Admin extends Cashier{
     Admin(int dbId, String dbName) throws SQLException, IOException, ClassNotFoundException {
         super(dbId, dbName);
     }
+
+    @Override
+    public void getMenu() {
+        super.getMenu();
+
+    }
+
     //Add new user
     protected void addNewUser() throws SQLException, IOException, ClassNotFoundException {
         System.out.println(" fname:");
@@ -29,7 +36,7 @@ public class Admin extends Cashier{
         String SQL = String.format("Insert INTO users Values(\'%s\',\'%s\',\'%s\',\'%s\',\'%s\');",fname,lname,password,login,position);
 
         PreparedStatement supplierCreatorDB = dbcon.connection.prepareStatement(SQL);
-        supplierCreatorDB.executeUpdate(SQL);
+        supplierCreatorDB.executeUpdate();
         System.out.println("Done...");
         dbcon.closeConnections();
 
@@ -86,7 +93,6 @@ public class Admin extends Cashier{
             int suplirsId_to_delete = scann.nextInt();
             Iterator<Supplier> supplierIterator= getLS().iterator();
             while(supplierIterator.hasNext()) {
-
                 Supplier nextSup = supplierIterator.next();
                 if (nextSup.getSupplierId() == suplirsId_to_delete) {
                     supplierIterator.remove();
@@ -117,7 +123,7 @@ public class Admin extends Cashier{
                         "1)  SupplierName;\n" +
                         "2)  Surname;\n" +
                         "3)  Phone;\n" +
-                        "4)  Adress;:  "
+                        "4)  Adress; :  "
         );
         String colName_for_updating = in.nextLine();
         System.out.print("\n Enter new value: ");

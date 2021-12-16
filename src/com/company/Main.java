@@ -8,23 +8,18 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
-
-        run();
+        runApplication();
     }
 
 
-    public static void run() throws SQLException, IOException, ClassNotFoundException {
-        String x = pass();
+    public static void runApplication() throws SQLException, IOException, ClassNotFoundException {
+        userVerification();
 
     }
-    public static String  pass() throws SQLException, IOException, ClassNotFoundException {
+    public static void userVerification() throws SQLException, IOException, ClassNotFoundException {
         DBConnector dbcon = new DBConnector();
-        dbcon.getConnectionToDB();
-
-
         for(int count = 1; count <= 3; count++) {
             Scanner scann = new Scanner(System.in);
-
             System.out.println("login: ");
             String log = scann.nextLine();
             System.out.println("password: ");
@@ -47,7 +42,8 @@ public class Main {
                     int chance = 3 - count;
                     System.out.println("You have only " + chance + " trials left.");
                     count++;
-                    continue;
+                    dbcon.closeConnections();
+
                 }
                 else{
                     System.out.println("Alles gut! Ehhh!");
@@ -64,59 +60,29 @@ public class Main {
                     int Id = 0;
                     if(res.next()){ Id = res.getInt(1);}
 
+                    assert position != null : "Вы не занимаете никакую должность";
                     usersPosition(Id,name,position);
-                    return position;
+
                 }
             } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
         System.out.println("Sie haben schon alle Chancen benutzt!");
-        return "null";
+
     }
 
 
     public static void usersPosition(int id,  String name,String position) throws SQLException, IOException, ClassNotFoundException {
-
-        menu(position);
         if(position.equals("Админстратор")){
             Admin administrator = new Admin(id,name);
-            administrator.getAllInfoAboutSuppliers();
+//            administrator.getMenu();
         }
         else if(position.equals("Кассир")){
             Cashier cashier = new Cashier(id,name);
-
-        }
-        else{
-            System.out.println("");
-        }
-    }
-    public static void  menu(String position) throws SQLException, IOException, ClassNotFoundException {
-        Scanner scann = new Scanner(System.in);
-
-        if(position.equals("Админстратор")){
-            System.out.println("Enter the number of op");
-            System.out.println("Search ");
-            System.out.println("Add");
-            System.out.println("Delete");
-            System.out.println(" ");
-
-            int option = scann.nextInt();
-
-        }
-        else{
-            System.out.println(" ");
-            System.out.println(" ");
-            System.out.println(" ");
-            System.out.println(" ");
-            System.out.println(" ");
-
+//            cashier.getMenu();
 
         }
     }
-    public static void performingOperations(){
-
-    }
-
-
 
 }

@@ -14,7 +14,7 @@ public class Admin extends Cashier{
     }
 
     @Override
-    public void getMenu() {
+    public void getMenu() throws InterruptedException, SQLException, IOException, ClassNotFoundException {
         super.getMenu();
 
     }
@@ -45,11 +45,6 @@ public class Admin extends Cashier{
 
 
     //Supplier's methods
-    protected void getAllInfoAboutSuppliers(){
-        for(Supplier s: getLS()){
-            s.getInfoAboutSup();
-        }
-    }
     protected void supplierAdd() throws  SQLException {
 
         try{
@@ -113,7 +108,7 @@ public class Admin extends Cashier{
 
     protected void updateSupplier() throws SQLException, IOException, ClassNotFoundException {
         Scanner in = new Scanner(System.in);
-        getAllInfoAboutSuppliers();
+        getAllSuppliers();
         dbcon.getConnectionToDB();
         System.out.print("\n Enter id of updating material: ");
         int id_of_updating_suplier = in.nextInt();
@@ -226,13 +221,13 @@ public class Admin extends Cashier{
                     PreparedStatement materialWithSupplierConnector = dbcon.connection.prepareStatement(sqlBasedOnMCBSM);
                     materialWithSupplierConnector.executeUpdate();
                     dbcon.closeConnections();
-                    System.out.println("==================MAterials========================");
+                    System.out.println("==================Materials========================");
                     getAllMaterials();
                     System.out.println("===============Sups===============================");
-                    getAllInfoAboutSuppliers();
+                    getAllSuppliers();
                     break;
                 case 2:
-                    getAllInfoAboutSuppliers();
+                    getAllSuppliers();
                     System.out.println("Choose the existing supplier ID for the new material: ");
                     int choosenID = sc.nextInt();
                     if (choosenID <= getLS().size() && choosenID > 0) {
@@ -262,10 +257,10 @@ public class Admin extends Cashier{
                         PreparedStatement materialWSC = dbcon.connection.prepareStatement(sqlBasedOnMCBESM);
                         materialWSC.executeUpdate();
                         dbcon.closeConnections();
-                        System.out.println("==================MAterials========================");
+                        System.out.println("==================Materials========================");
                         getAllMaterials();
                         System.out.println("===============Sups===============================");
-                        getAllInfoAboutSuppliers();
+                        getAllSuppliers();
                     }
                     break;
             }

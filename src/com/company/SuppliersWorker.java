@@ -5,10 +5,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
- abstract class SuppliersWorker {
+abstract class SuppliersWorker {
     DBConnector dbcon = new DBConnector();
     private List<Supplier> LS = new ArrayList();
+    Scanner sc = new Scanner(System.in);
 
     protected class Supplier{
         private int SupplierId;
@@ -73,12 +75,11 @@ import java.util.List;
         }
         dbcon.closeConnections();
     }
-    //Admin's method
-//    protected void getAllInfoAboutSuppliers(){
-//        for(Supplier s: LS){
-//            s.getInfoAboutSup();
-//        }
-//    }
+    protected void getAllSuppliers(){
+        for(Supplier s: LS){
+            s.getInfoAboutSup();
+        }
+    }
     protected Supplier getSupByID(int id){
         Supplier requiredSup = null;
         for (Supplier s:
@@ -90,6 +91,18 @@ import java.util.List;
         }
         return requiredSup;
     }
+     protected void getSupByID(){
+         System.out.println("Введите Id нужного поставщика:");
+         int requiredSupId=sc.nextInt();
+         for (Supplier s:
+                 LS) {
+             if(s.getSupplierId()==requiredSupId){
+                s.getInfoAboutSup();
+             }
+             else System.out.println("К соажлению поставщика с таким Id не найдено");
+         }
+
+     }
 
 //Admin's method
 //    protected void updateSupplier() throws SQLException, IOException, ClassNotFoundException {

@@ -89,10 +89,10 @@ import java.util.*;
 
     protected void makeASale() throws SQLException, IOException, ClassNotFoundException {
 
-        List<MaterialWorker.Material> requiredMaterials = new ArrayList<>(searchMaterialByBrand());
+        List<MaterialWorker.Material> requiredMaterials = new ArrayList<>(searchMaterialByBrandForMakeASale());
         System.out.print("Выберите материал для покупки,введя его ID номер: ");
         int idOfRequiredMaterial = sc.nextInt();
-        MaterialWorker.Material neededMaterial = searchMaterialByIdInList(idOfRequiredMaterial, requiredMaterials);
+        MaterialWorker.Material neededMaterial = searchMaterialByIdInListForMakeASale(idOfRequiredMaterial, requiredMaterials);
         System.out.println("Какое количество единиц данного материала вам нужно: ");
         int buyerQuantity = sc.nextInt();
         if (buyerQuantity > neededMaterial.getQuantity()) {
@@ -152,7 +152,7 @@ import java.util.*;
         else if (secondChoice == 2) {
             System.out.println("Ваш заказ:");
             for (Map.Entry<Integer,Integer> e: soldMaterials.entrySet()) {
-                MaterialWorker.Material m = searchMatById(e.getKey());
+                MaterialWorker.Material m = searchMatByIdForMakeASale(e.getKey());
                 System.out.printf("ID:%d\nName:%s\nDescription:%s\nPrice:%d\nQuantity for sale:%d\nThe amount for this material:%d\n\n",m.getId(),m.getName(),m.getDescription(),m.getPrice(),e.getValue(),e.getValue()*m.getPrice());
             }
             System.out.printf("К оплате: %d\nВведите вносимую сумму:", allSumsTogether);
@@ -161,7 +161,7 @@ import java.util.*;
         }
         else if (secondChoice == 3) {
             for (Map.Entry<Integer,Integer> e: soldMaterials.entrySet()) {
-                MaterialWorker.Material m = searchMatById(e.getKey());
+                MaterialWorker.Material m = searchMatByIdForMakeASale(e.getKey());
                 System.out.printf("ID:%d\nName:%s\nDescription:%s\nPrice:%d\nQuantity for sale:%d\nThe amount for this material:%d\n\n",m.getId(),m.getName(),m.getDescription(),m.getPrice(),e.getValue(),e.getValue()*m.getPrice());
             }
             System.out.printf("В вашей корзине %d материала(-ов)\nОбщая сумма:%d", soldMaterials.size(), allSumsTogether);
@@ -196,7 +196,7 @@ import java.util.*;
             String date = getTime();
             String info = "";
             for (Map.Entry<Integer,Integer> e: soldMaterials.entrySet()) {
-                MaterialWorker.Material m = searchMatById(e.getKey());
+                MaterialWorker.Material m = searchMatByIdForMakeASale(e.getKey());
                 info = info.concat(String.format("Id:%d Name:%s Quantity of sold:%d Price:%d\n",m.getId(),m.getName(),e.getValue(),m.getPrice()));
             }
             dbcon.getConnectionToDB();
@@ -214,7 +214,7 @@ import java.util.*;
     }
     private void rollingBackChanges() throws SQLException, IOException, ClassNotFoundException {
         for (Map.Entry<Integer,Integer> e: soldMaterials.entrySet()) {
-            MaterialWorker.Material m = searchMatById(e.getKey());
+            MaterialWorker.Material m = searchMatByIdForMakeASale(e.getKey());
             dbcon.getConnectionToDB();
             final String sqlForRollback =String.format("UPDATE materials SET Quantity=%d WHERE idmaterial=%d",m.getQuantity()+e.getValue(),e.getKey());
             PreparedStatement roller = dbcon.connection.prepareStatement(sqlForRollback);

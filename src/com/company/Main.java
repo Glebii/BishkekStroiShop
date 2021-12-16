@@ -64,7 +64,7 @@ public class Main {
                     usersPosition(Id,name,position);
 
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | InterruptedException e) {
                 e.printStackTrace();
             }
         }
@@ -73,14 +73,15 @@ public class Main {
     }
 
 
-    public static void usersPosition(int id,  String name,String position) throws SQLException, IOException, ClassNotFoundException {
+    public static void usersPosition(int id,  String name,String position) throws SQLException, IOException, ClassNotFoundException, InterruptedException {
         if(position.equals("Админстратор")){
             Admin administrator = new Admin(id,name);
 //            administrator.getMenu();
         }
         else if(position.equals("Кассир")){
             Cashier cashier = new Cashier(id,name);
-//            cashier.getMenu();
+            System.out.printf("Добро пожаловать , %s!",cashier.getName());
+            cashier.getMenu();
 
         }
     }

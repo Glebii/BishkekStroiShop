@@ -15,7 +15,27 @@ public class Admin extends Cashier{
 
     @Override
     public void getMenu() throws InterruptedException, SQLException, IOException, ClassNotFoundException {
-        System.out.println("Чего желаете?\n1) Увидеть все материалы\n2) Посмотреть материал по Id\n3) Посмотреть материал по бренду\n4) Увидеть всех поставщиков\n5) Посмотреть данные поставщика по Id\n6) Сделать продажу\n7) Увидеть все продажи\n8) Завершить работу\nВведите номер операции:");
+        System.out.println("Чего желаете?\n" +
+                "Материалы"+
+                "1)  Увидеть все материалы\n" +
+                "2)  Посмотреть материал по Id\n" +
+                "3)  Найти материалы соответсвующие по бренду\n" +
+                "4)  Удалить материал\n" +
+                "5)  Пополнить количество материалов\n" +
+                "6)  Изменить параметры материала\n" +
+                "7)  Добавить новый материал\n" +
+                "Поставщики"+
+                "8)  Увидеть всех поставщиков\n" +
+                "9)  Посмотреть данные поставщика по Id\n"+
+                "10) Добавить нового поставщика\n"+
+                "11) Изменить параметры поставщика\n"+
+                "12) Удалить поставщика\n"+
+                "Продажи"+
+                "13) Сделать продажу\n" +
+                "14) Увидеть все продажи\n"+
+                "15) Завершить работу\n"+
+                "Введите номер операции:");
+
         Scanner sc = new Scanner(System.in);
         int operationNumber = sc.nextInt();
         switch (operationNumber) {
@@ -35,29 +55,61 @@ public class Admin extends Cashier{
                 getMenu();
                 break;
             case 4:
-                getAllSuppliers();
+                deleteMaterial();
                 Thread.sleep(2000);
                 getMenu();
                 break;
             case 5:
-                getSupByID();
+                materialsRefillUpdate();
                 Thread.sleep(2000);
                 getMenu();
                 break;
             case 6:
-                makeASale();
+                updateMaterials();
                 Thread.sleep(2000);
                 getMenu();
                 break;
             case 7:
-                getAllTransactions();
+                createTheNewMaterial();
                 Thread.sleep(2000);
                 getMenu();
             case 8:
-                System.out.printf("Отличная работа ,%s", getName());
+                getAllSuppliers();
+                Thread.sleep(2000);
+                getMenu();
                 break;
             case 9:
-                System.out.println("Вот как надо было");
+                getSupByID();
+                Thread.sleep(2000);
+                getMenu();
+                break;
+            case 10:
+                supplierAdd();
+                Thread.sleep(2000);
+                getMenu();
+                break;
+            case 11:
+                updateSupplier();
+                Thread.sleep(2000);
+                getMenu();
+                break;
+            case 12:
+                supplierDelete();
+                Thread.sleep(2000);
+                getMenu();
+                break;
+            case 13:
+                makeASale();
+                Thread.sleep(2000);
+                getMenu();
+                break;
+            case 14:
+                getAllTransactions();
+                Thread.sleep(2000);
+                getMenu();
+                break;
+            case 15:
+                System.out.printf("Отличная работа ,%s", getName());
                 break;
             default:
                 System.out.println("Номер операции введен не верно, попробуйте снова!");

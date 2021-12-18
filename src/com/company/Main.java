@@ -8,12 +8,7 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
-
-
-        Admin cc = new Admin(34,"fasd");
-        cc.addNewUser();
-
-//        runApplication();
+        runApplication();
     }
 
 
@@ -32,10 +27,14 @@ public class Main {
 
             try {
                 dbcon.getConnectionToDB();
+                dbcon.statement.executeUpdate("DELETE FROM `materials` WHERE Quantity<=0 and idmaterial NOT IN (SELECT materials_idmaterial FROM materials_has_suppliers);");
+                dbcon.closeConnections();
+                dbcon.getConnectionToDB();
+
 
                 String query = "SELECT Position FROM users WHERE Login='" + log + "' AND Password_='" + pass + "';";
                 String queryForName = "SELECT Lname FROM users WHERE Login='" + log + "' AND Password_='" + pass + "';";
-                String queryForId = "SELECT Userid FROM users WHERE Login='" + log + "' AND Password_='" + pass + "';";
+                String queryForId = "SELECT ID FROM users WHERE Login='" + log + "' AND Password_='" + pass + "';";
                 
                 ResultSet res = dbcon.statement.executeQuery(query);
                 ResultSet resForName = dbcon.statement.executeQuery(queryForName);
@@ -64,6 +63,7 @@ public class Main {
                     if(res.next()){ Id = res.getInt(1);}
 
                     assert position != null : "Sie bekleiden keine Position.";
+                    dbcon.closeConnections();
                     usersPosition(Id,name,position);
 
                 }
@@ -79,7 +79,7 @@ public class Main {
     public static void usersPosition(int id,  String name,String position) throws SQLException, IOException, ClassNotFoundException, InterruptedException {
         if(position.equals("Administrator")){
             Admin administrator = new Admin(id,name);
-//            administrator.getMenu();
+            administrator.getMenu();
         }
         else if(position.equals("Kassier")){
             Cashier cashier = new Cashier(id,name);

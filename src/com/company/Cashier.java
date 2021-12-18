@@ -4,24 +4,11 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Scanner;
 
-public class Cashier extends TransactionWorker implements MenuShower {
-    private final int Id;
-    private final String Name;
-    public String getName() {
-        return this.Name;
+public class Cashier extends User implements MenuShower {
+
+    Cashier(int dbId, String dbName) throws SQLException, IOException, ClassNotFoundException {
+        super(dbId, dbName);
     }
-
-
-
-    Cashier(int dbId , String dbName) throws SQLException, IOException, ClassNotFoundException {
-        this.Id = dbId;
-        this.Name=dbName;
-
-        createAllTransactions();
-        createAllMaterials();
-        createAllSuppliers();
-    }
-
 
     @Override
     public void getMenu() throws InterruptedException, SQLException, IOException, ClassNotFoundException {
@@ -64,7 +51,7 @@ public class Cashier extends TransactionWorker implements MenuShower {
                 getMenu();
                 break;
             case 6:
-                makeASale();
+                makeASale(this);
                 Thread.sleep(2000);
                 getMenu();
                 break;

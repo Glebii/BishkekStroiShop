@@ -9,7 +9,7 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.function.Predicate;
 
-public class Admin<PasswordEncoder> extends Cashier{
+public class Admin extends Cashier{
     Admin(int dbId, String dbName) throws SQLException, IOException, ClassNotFoundException {
         super(dbId, dbName);
     }
@@ -121,7 +121,7 @@ public class Admin<PasswordEncoder> extends Cashier{
                 getMenu();
                 break;
             case 13:
-                makeASale();
+                makeASale(this);
                 Thread.sleep(2000);
                 getMenu();
                 break;
@@ -142,8 +142,6 @@ public class Admin<PasswordEncoder> extends Cashier{
                 System.out.println("Die eingegebene Optionsnummer ist falsch, versuchen Sie es erneut!");
                 getMenu();
                 break;
-
-
         }
     }
 
@@ -181,7 +179,7 @@ public class Admin<PasswordEncoder> extends Cashier{
                     boolean hasName = !(password.contains(fname) || password.contains(lname));
                     boolean hasEightSymbol = (password.length() >= 8);
 
-                    if( hasUppercase == true && hasNumber == true && hasLowercase == true && hasName == true && hasEightSymbol == true){
+                    if( hasUppercase && hasNumber && hasLowercase && hasName && hasEightSymbol){
                         System.out.println("Ihr Passwort ist nicht sicher, versuchen Sie es erneut!");
                         creatingPassProcess = false;
                     }
@@ -258,9 +256,12 @@ public class Admin<PasswordEncoder> extends Cashier{
             }
 
             String sql = String.format("DELETE FROM suppliers WHERE idsupplier = %d;", suplirsId_to_delete);
-            int rows = dbcon.statement.executeUpdate(sql);
-            System.out.println("Der Anbieter wurde erfolgreich entfernt!");
+            dbcon.statement.executeUpdate(sql);
             dbcon.closeConnections();
+            dbcon.getConnectionToDB();
+            dbcon.statement.executeUpdate("DELETE FROM `materials` WHERE Quantity<=0 and idmaterial NOT IN (SELECT materials_idmaterial FROM materials_has_suppliers);");
+            dbcon.closeConnections();
+            System.out.println("Der Anbieter wurde erfolgreich entfernt!");
         }
         catch (Exception ex) {
             System.out.println("Verbindung fehlgeschlagen...");
@@ -382,9 +383,9 @@ public class Admin<PasswordEncoder> extends Cashier{
                     PreparedStatement materialWithSupplierConnector = dbcon.connection.prepareStatement(sqlBasedOnMCBSM);
                     materialWithSupplierConnector.executeUpdate();
                     dbcon.closeConnections();
-                    System.out.println("==================Materials========================");
+                    System.out.println("==================Werkstoffe========================");
                     getAllMaterials();
-                    System.out.println("===============Sups===============================");
+                    System.out.println("===============Mitarbeiter===============================");
                     getAllSuppliers();
                     break;
                 case 2:
@@ -418,9 +419,9 @@ public class Admin<PasswordEncoder> extends Cashier{
                         PreparedStatement materialWSC = dbcon.connection.prepareStatement(sqlBasedOnMCBESM);
                         materialWSC.executeUpdate();
                         dbcon.closeConnections();
-                        System.out.println("==================MVeröffentlichung========================");
+                        System.out.println("==================Werkstoffe========================");
                         getAllMaterials();
-                        System.out.println("===============Anbieter===============================");
+                        System.out.println("===============Mitarbieter===============================");
                         getAllSuppliers();
                     }
                     break;
@@ -447,7 +448,7 @@ public class Admin<PasswordEncoder> extends Cashier{
         try {
             String sql = String.format("UPDATE materials SET Quantity=Quantity+%d WHERE Name=\'%s\';", quantity_for_refill, name_of_object_for_refill);
             PreparedStatement preparedStatement = dbcon.connection.prepareStatement(sql);
-            int rows = preparedStatement.executeUpdate(sql);
+            preparedStatement.executeUpdate();
             System.out.println("Materialien wurden erfolgreich nachgefüllt!");
             preparedStatement.close();
         } catch (Exception ex) {
@@ -469,7 +470,7 @@ public class Admin<PasswordEncoder> extends Cashier{
             //проверку нужно сделать
 
             String sql = String.format("DELETE FROM materials WHERE Name=\'%s\';", name_of_object);
-            int rows = dbcon.statement.executeUpdate(sql);
+            dbcon.statement.executeUpdate(sql);
             System.out.println("Das Material wurde entfernt!");
             getAllMaterials();
             dbcon.closeConnections();

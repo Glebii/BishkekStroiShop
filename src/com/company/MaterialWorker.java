@@ -174,13 +174,20 @@ abstract class MaterialWorker extends SuppliersWorker{
     public void searchMatById(){
         System.out.println("Geben Sie die ID des gewünschten Materials ein:");
         int requiredId = sc.nextInt();
+        int exist = 0;
+
         for (Material m:
                 LM) {
             if(m.getId()==requiredId){
                 m.getInfo();
+                exist++;
             }
-            else System.out.println("Leider haben wir kein Material mit dieser Id gefunden.");
+            else continue;
         }
+        if(exist == 0 ){
+            System.out.println("Leider haben wir kein Material mit dieser Id gefunden.");
+        }
+
     }
     public void searchMaterialByBrand() {
         Set<String> brandsSet = new HashSet<>();

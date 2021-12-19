@@ -17,7 +17,7 @@ public class Admin extends Cashier{
     @Override
     public void getMenu() throws InterruptedException, SQLException, IOException, ClassNotFoundException {
         System.out.println("Wählen Sie eine Option nach Nummer aus:\n" +
-                        "Werkstoffe"+
+                        "Werkstoffe\n"+
                         "1) Alle Materialien sehen\n" +
                         "2) Material nach Id anzeigen\n" +
                         " 3) Finden Sie relevante Materialien nach Marke\n" +
@@ -220,14 +220,13 @@ public class Admin extends Cashier{
             String phone = in.nextLine();
             System.out.println("\nGeben Sie die Adresse des Lieferanten ein: ");
             String adress = in.nextLine();
-            int ids = getLS().size() +1;
-            //        int ids = LS.size() +1;
+            int ids = getLS().size() +2;
+
 
 
             createSupplier(ids,names,surname,phone,adress);
 
-            String SQL = String.format("INSERT suppliers(idsupplier,SupplierName, Surname, Phone, Adress) VALUES (%d,\'%s\',\'%s\',\'%s\',\'%s\');",
-                    ids, names, surname, phone, adress);
+            String SQL = String.format("INSERT suppliers(idsupplier,SupplierName, Surname, Phone, Adress) VALUES (%d,\'%s\',\'%s\',\'%s\',\'%s\');",ids, names, surname, phone, adress);
 
             PreparedStatement supplierCreatorDB = dbcon.connection.prepareStatement(SQL);
             supplierCreatorDB.executeUpdate(SQL);

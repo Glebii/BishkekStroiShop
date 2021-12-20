@@ -137,7 +137,7 @@ public class Admin extends Cashier{
                 break;
             case 16:
                 System.out.printf("Gute Arbeit ,%s", getName());
-                break;
+                return;
             default:
                 System.out.println("Die eingegebene Optionsnummer ist falsch, versuchen Sie es erneut!");
                 getMenu();

@@ -61,6 +61,7 @@ public class Cashier extends User implements MenuShower {
                 getMenu();
             case 8:
                 System.out.printf("Gute Arbeit ,%s !",getName());
+                return;
             default:
                 System.out.println("Die Operationsnummer ist falsch eingegeben,versuchen Sie es erneut!");
                 getMenu();

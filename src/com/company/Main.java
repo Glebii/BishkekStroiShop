@@ -8,11 +8,6 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
-
-//
-//        Admin cc = new Admin(34,"fasd");
-//        cc.addNewUser();
-
         runApplication();
     }
 
@@ -23,6 +18,9 @@ public class Main {
     }
     public static void userVerification() throws SQLException, IOException, ClassNotFoundException {
         DBConnector dbcon = new DBConnector();
+        dbcon.getConnectionToDB();
+        dbcon.statement.executeUpdate("DELETE FROM `materials` WHERE Quantity<=0 AND idmaterial not in (SELECT materials_idmaterial FROM materials_has_suppliers)");
+        dbcon.closeConnections();
         for(int count = 1; count <= 3; count++) {
             Scanner scann = new Scanner(System.in);
             System.out.println("Geben Sie Ihr Login ein: ");
@@ -32,14 +30,9 @@ public class Main {
 
             try {
                 dbcon.getConnectionToDB();
-
                 String query = "SELECT Position,Fname,ID FROM users WHERE Login='" + log + "' AND Password_='" + pass + "';";
-//                String queryForName = "SELECT Lname FROM users WHERE Login='" + log + "' AND Password_='" + pass + "';";
-//                String queryForId = "SELECT ID FROM users WHERE Login='" + log + "' AND Password_='" + pass + "';";
                 
                 ResultSet res = dbcon.statement.executeQuery(query);
-//                ResultSet resForName = dbcon.statement.executeQuery(queryForName);
-//                ResultSet resForId = dbcon.statement.executeQuery(queryForId);
                 System.out.println("good");
 
                 res.beforeFirst();
@@ -47,28 +40,19 @@ public class Main {
                     System.out.println("Das Passwort wurde falsch eingegeben, bitte versuchen Sie es erneut!");
                     int chance = 3 - count;
                     System.out.println("Sie haben nur noch " + chance + " Versuche.");
+                    dbcon.closeConnections();
                 }
                 else{
                     res.beforeFirst();
-                    String position ;
-                    String name ;
-                    int Id ;
-                    if(res.next()){
-                        position = res.getString("Position");
-                        name  = res.getString("FName");
-                        Id = res.getInt("ID");
+                    while (res.next()){
+                       String position = res.getString("Position");
+                        String name  = res.getString("FName");
+                        int Id = res.getInt("ID");
                         System.out.println(position);
                         System.out.println(name);
                         System.out.println(Id);
-                        System.out.println("bla b;la");
-
                         usersPosition(Id,name,position);
-
-                        System.out.println("bitti");
-
                     }
-
-
                 }
             } catch (SQLException | InterruptedException e) {
                 System.out.println("catch");
@@ -84,12 +68,12 @@ public class Main {
 
 
     public static void usersPosition(int id,String name,String position) throws SQLException, IOException, ClassNotFoundException, InterruptedException {
-        if(position.equals("Админстратор")){
+        if(position.equals("Администратор")){
             System.out.println("funk");
             Admin administrator = new Admin(id,name);
             administrator.getMenu();
         }
-        else if(position.equals("Kassier")){
+        else if(position.equals("Кассир")){
             Cashier cashier = new Cashier(id,name);
             System.out.printf("Herzlich willkommen, %s !",cashier.getName());
             cashier.getMenu();

@@ -236,8 +236,6 @@ abstract class TransactionWorker extends MaterialWorker{
                 fullQuantity = 0;
                 soldMaterials.clear();
                 return;
-
-
             }
         } catch (SQLException exception) {
             rollingBackChanges();

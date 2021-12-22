@@ -103,22 +103,23 @@ abstract class TransactionWorker extends MaterialWorker{
     protected void makeASale(User user) throws SQLException, IOException, ClassNotFoundException {
 
         List<MaterialWorker.Material> requiredMaterials = new ArrayList<>(searchMaterialByBrandForMakeASale());
-        System.out.print("Выберите материал для покупки,введя его ID номер: ");
+        System.out.print("Wählen Sie das Material aus, das Sie kaufen möchten, indem Sie seine ID-Nummer eingeben: ");
         int idOfRequiredMaterial = sc.nextInt();
         if(searchMaterialByIdInListForMakeASale(idOfRequiredMaterial, requiredMaterials)==null){
-            System.out.println("В списке материалов для данного бренда нет выбранного вами материала.\nПожалуйста выберите бренд повторно и укажите материал относящийся к нему.");
+            System.out.println("Es ist kein Material in der Materialliste für diese Marke aufgeführt, das Sie ausgewählt haben.\nBitte wählen Sie die Marke erneut aus und geben Sie das entsprechende Material an.");
             requiredMaterials.clear();
             makeASale(user);
             return;
         }
         MaterialWorker.Material neededMaterial = searchMaterialByIdInListForMakeASale(idOfRequiredMaterial, requiredMaterials);
-        System.out.println("Какое количество единиц данного материала вам нужно: ");
+        neededMaterial.getInfo();
+        System.out.println("Wie viele Einheiten dieses Materials benötigen Sie:");
         int buyerQuantity = sc.nextInt();
         if (buyerQuantity > neededMaterial.getQuantity()) {
             System.out.println(
-                    "К сожалению у нас нет такого количества материалов которое вам нужно\n" +
-                            "Если вы хотите купить доступное количество материалов нажмите кнопку: 1\n" +
-                            "Если хотите отменить покупку введите: 2 "
+                    "Leider haben wir nicht die Menge an Materialien, die Sie benötigen\n" +
+                            "Wenn Sie die verfügbare Menge an Materialien kaufen möchten, klicken Sie auf: 1\n" +
+                            "Wenn Sie den Kauf stornieren möchten, geben Sie Folgendes ein: 2"
             );
             int customerChoice = sc.nextInt();
             switch (customerChoice) {
@@ -126,7 +127,7 @@ abstract class TransactionWorker extends MaterialWorker{
                     dbcon.getConnectionToDB();
                     int totalSumForOneMaterial = neededMaterial.getPrice() * neededMaterial.getQuantity();
                     if(soldMaterials.containsKey(neededMaterial.getId())){
-                        System.out.println("Мы выдали все что было в наличии");
+                        System.out.println("Wir haben alles ausgegeben, was auf Lager war");
                     }
                     else soldMaterials.put(neededMaterial.getId(),neededMaterial.getQuantity());
                     final String sqlFUMAbsolute = String.format("UPDATE materials SET Quantity=0 WHERE idmaterial=%d",neededMaterial.getId());
@@ -135,7 +136,7 @@ abstract class TransactionWorker extends MaterialWorker{
                     fullQuantity+=neededMaterial.getQuantity();
                     allSumsTogether += totalSumForOneMaterial;
                     neededMaterial.setQuantity(0);
-                    System.out.println("Вы хотите продолжить покупки (1),провести оплату (2),увидеть вашу корзину(3),отменить покупку(4)?");
+                    System.out.println("Möchten Sie weiterhin einkaufen (1),Möchten Sie eine Zahlung leisten (2),Möchten Sie Ihren Warenkorb sehen (3),Möchten Sie Ihren Kauf stornieren sehen (4)?");
                     int customerChoiceToExitOrContinue = sc.nextInt();
                     postoperativeBehavior(customerChoiceToExitOrContinue,user);
                     dbcon.closeConnections();
@@ -159,12 +160,12 @@ abstract class TransactionWorker extends MaterialWorker{
             fullQuantity+=buyerQuantity;
             allSumsTogether += totalSumForOneMaterial;
             neededMaterial.setQuantity(newQuantityForMaterial);
-            System.out.println("Вы хотите продолжить покупки (1),провести оплату (2),увидеть вашу корзину(3),отменить покупку(4)?");
+            System.out.println("Möchten Sie weiterhin einkaufen (1),Möchten Sie eine Zahlung leisten (2),Möchten Sie Ihren Warenkorb sehen (3),Möchten Sie Ihren Kauf stornieren sehen (4)?");
             int customerChoiceToExitOrContinue = sc.nextInt();
             postoperativeBehavior(customerChoiceToExitOrContinue,user);
             dbcon.closeConnections();
         } else if (buyerQuantity <= 0) {
-            System.out.println("Введите значение больше 0");
+            System.out.println("Geben Sie einen Wert größer als 0 ein");
             makeASale(user);
         }
 
@@ -175,22 +176,22 @@ abstract class TransactionWorker extends MaterialWorker{
             makeASale(user);
         }
         else if (secondChoice == 2) {
-            System.out.println("Ваш заказ:");
+            System.out.println("Ihre Bestellung:");
             for (Map.Entry<Integer,Integer> e: soldMaterials.entrySet()) {
                 MaterialWorker.Material m = searchMatByIdForMakeASale(e.getKey());
-                System.out.printf("ID:%d\nName:%s\nDescription:%s\nPrice:%d\nQuantity for sale:%d\nThe amount for this material:%d\n\n",m.getId(),m.getName(),m.getDescription(),m.getPrice(),e.getValue(),e.getValue()*m.getPrice());
+                System.out.printf("ID:%d\nName:%s\nBeschreibung:%s\nPreis:%d\nMenge zum Verkauf:%d\nBetrag für dieses Material:%d\n\n",m.getId(),m.getName(),m.getDescription(),m.getPrice(),e.getValue(),e.getValue()*m.getPrice());
             }
-            System.out.printf("К оплате: %d\nВведите вносимую сумму:", allSumsTogether);
+            System.out.printf("Zahlbar: %d\nGeben Sie den Einzahlungsbetrag ein: ", allSumsTogether);
             int money = sc.nextInt();
             payment(money,user);
         }
         else if (secondChoice == 3) {
             for (Map.Entry<Integer,Integer> e: soldMaterials.entrySet()) {
                 MaterialWorker.Material m = searchMatByIdForMakeASale(e.getKey());
-                System.out.printf("ID:%d\nName:%s\nDescription:%s\nPrice:%d\nQuantity for sale:%d\nThe amount for this material:%d\n\n",m.getId(),m.getName(),m.getDescription(),m.getPrice(),e.getValue(),e.getValue()*m.getPrice());
+                System.out.printf("ID:%d\nName:%s\nBeschreibung:%s\nPreis:%d\nMenge zum Verkauf:%d\nBetrag für dieses Material:%d\n\n",m.getId(),m.getName(),m.getDescription(),m.getPrice(),e.getValue(),e.getValue()*m.getPrice());
             }
-            System.out.printf("В вашей корзине %d материала(-ов)\nОбщая сумма:%d", soldMaterials.size(), allSumsTogether);
-            System.out.println("\nВы хотите продолжить покупки (1),провести оплату (2),увидеть вашу корзину(3),отменить покупку(4)?");
+            System.out.printf("Es gibt %d in Ihrem Warenkorb\nGesamtbetrag:%d", soldMaterials.size(), allSumsTogether);
+            System.out.println("\nMöchten Sie weiterhin einkaufen (1),Möchten Sie eine Zahlung leisten (2),Möchten Sie Ihren Warenkorb sehen (3),Möchten Sie Ihren Kauf stornieren sehen (4)?");
             int c = sc.nextInt();
             postoperativeBehavior(c,user);
         } else if (secondChoice == 4) {
@@ -204,12 +205,12 @@ abstract class TransactionWorker extends MaterialWorker{
     private void payment(int money, User user) throws SQLException, IOException, ClassNotFoundException {
         try {
             if (money < 0) {
-                System.out.println("Введено некорректное значение суммы,проведите повторный ввод!");
+                System.out.println("Sie haben einen falschen Betrag eingegeben, führen Sie eine erneute Eingabe durch!");
                 postoperativeBehavior(3, user);
             } else if (money > 0 && money < allSumsTogether) {
                 while (money < allSumsTogether) {
-                    System.out.printf("Внесенных средств недостаточно для оплаты. Недостоющая сумма:%d\n", allSumsTogether - money);
-                    System.out.println("Введите размер доплаты: ");
+                    System.out.printf("Die eingezahlten Gelder reichen nicht aus, um sie zu bezahlen. fehlender Betrag:%d\n", allSumsTogether - money);
+                    System.out.println("Geben Sie den Zuschlag ein: ");
                     int dop = sc.nextInt();
                     money += dop;
                     payment(money, user);
@@ -221,7 +222,7 @@ abstract class TransactionWorker extends MaterialWorker{
                 String info = "";
                 for (Map.Entry<Integer, Integer> e : soldMaterials.entrySet()) {
                     MaterialWorker.Material m = searchMatByIdForMakeASale(e.getKey());
-                    info = info.concat(String.format("Id:%d Quantity of sold:%d Name:%s Price:%d\n", m.getId(), e.getValue() ,m.getName(), m.getPrice()));
+                    info = info.concat(String.format("Id:%d Menge des verkauften Materials:%d Name:%s Preis:%d\n", m.getId(), e.getValue() ,m.getName(), m.getPrice()));
                 }
                 dbcon.getConnectionToDB();
                 final String transaction = String.format("INSERT INTO transactions (Info,Date,Quantity,Total,CashierIDTransaction) VALUES (\'%s\',\'%s\',%d,%d,%d)", info, date, fullQuantity, allSumsTogether, user.getId());
@@ -231,7 +232,7 @@ abstract class TransactionWorker extends MaterialWorker{
                 dbcon.getConnectionToDB();
                 dbcon.statement.executeUpdate("DELETE FROM `materials` WHERE Quantity<=0 and idmaterial NOT IN (SELECT materials_idmaterial FROM materials_has_suppliers);");
                 dbcon.closeConnections();
-                System.out.printf("Отлично транзакция проведена! Ваша сдача: %d\n", money - allSumsTogether);
+                System.out.printf("Gut, die Transaktion wurde durchgeführt! Ihre Übergabe: %d\n", money - allSumsTogether);
                 allSumsTogether = 0;
                 fullQuantity = 0;
                 soldMaterials.clear();
@@ -280,7 +281,7 @@ abstract class TransactionWorker extends MaterialWorker{
         return requiredTransaction;
     }
     protected void rollbackTransaction() throws SQLException, IOException, ClassNotFoundException {
-        System.out.println("Введите Id транзакции: ");
+        System.out.println("Transaktions-ID eingeben: ");
         int trId = sc.nextInt();
         Transaction requiredTransaction = getTransactionById(trId);
         String transactionBody = requiredTransaction.getNameOfMaterial();

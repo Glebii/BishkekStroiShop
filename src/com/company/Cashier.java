@@ -5,11 +5,9 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Cashier extends User implements MenuShower {
-
     Cashier(int dbId, String dbName) throws SQLException, IOException, ClassNotFoundException {
         super(dbId, dbName);
     }
-
     @Override
     public void getMenu() throws InterruptedException, SQLException, IOException, ClassNotFoundException {
         System.out.println("Was wünschen Sie sich?\n" +

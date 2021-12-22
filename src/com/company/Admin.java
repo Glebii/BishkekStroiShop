@@ -13,7 +13,6 @@ public class Admin extends Cashier{
     Admin(int dbId, String dbName) throws SQLException, IOException, ClassNotFoundException {
         super(dbId, dbName);
     }
-
     @Override
     public void getMenu() throws InterruptedException, SQLException, IOException, ClassNotFoundException {
         System.out.println("Wählen Sie eine Option nach Nummer aus:\n" +
@@ -35,7 +34,8 @@ public class Admin extends Cashier{
                         "13) Verkauf tätigen\n" +
                         "14) Alle Verkäufe sehen\n"+
                         "15) Fügt einen neuen Benutzer hinzu\n"+
-                        "16) Herunterfahren\n"+
+                        "16) Transaktion abbrechen\n"+
+                        "17) Herunterfahren\n"+
                         "Geben Sie die Operationsnummer ein:");
 
 //                "Материалы"+
@@ -56,7 +56,8 @@ public class Admin extends Cashier{
 //                "13) Сделать продажу\n" +
 //                "14) Увидеть все продажи\n"+
 //                "15) Добавит нового пользователя\n"+
-//                "16) Завершить работу\n"+
+//                "16) Отменить транзацкию\n"+
+        //         17) завершить работу
 
         Scanner sc = new Scanner(System.in);
         int operationNumber = sc.nextInt();
@@ -136,6 +137,11 @@ public class Admin extends Cashier{
                 getMenu();
                 break;
             case 16:
+                rollbackTransaction();
+                Thread.sleep(2000);
+                getMenu();
+                break;
+            case 17:
                 System.out.printf("Gute Arbeit ,%s", getName());
                 return;
             default:

@@ -251,7 +251,6 @@ abstract class MaterialWorker extends SuppliersWorker{
         Material requiredMat = null;
         for(Material m:l){
             if(m.getId()==id){
-                m.getInfo();
                 requiredMat=m;
             }
         }

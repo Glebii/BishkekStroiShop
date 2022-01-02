@@ -15,22 +15,20 @@ public class Admin extends Cashier{
     }
     @Override
     public void getMenu() throws InterruptedException, SQLException, IOException, ClassNotFoundException {
-        System.out.println("Wählen Sie eine Option nach Nummer aus:\n" +
+        System.out.println("\nWählen Sie eine Option nach Nummer aus:\n" +
                         "Werkstoffe\n"+
                         "1) Alle Materialien sehen\n" +
                         "2) Material nach Id anzeigen\n" +
-                        " 3) Finden Sie relevante Materialien nach Marke\n" +
+                        "3) Finden Sie relevante Materialien nach Marke\n" +
                         "4) Material entfernen\n" +
                         "5) Materialmenge nachfüllen\n" +
                         "6) Materialeinstellungen ändern\n" +
-                        "7) Neues Material hinzufügen\n" +
-                        "Lieferanten"+
+                        "7) Neues Material hinzufügen \nLieferanten\n"+
                         "8) Alle Anbieter anzeigen\n" +
                         "9) Lieferantendaten nach Id anzeigen\n"+
                         "10) Neuen Anbieter hinzufügen\n"+
                         "11) Kreditoreneinstellungen ändern\n"+
-                        "12) Anbieter entfernen\n"+
-                        "Verkäufe"+
+                        "12) Anbieter entfernen \n"+
                         "13) Verkauf tätigen\n" +
                         "14) Alle Verkäufe sehen\n"+
                         "15) Fügt einen neuen Benutzer hinzu\n"+
@@ -52,11 +50,10 @@ public class Admin extends Cashier{
 //                "10) Добавить нового поставщика\n"+
 //                "11) Изменить параметры поставщика\n"+
 //                "12) Удалить поставщика\n"+
-//                "Продажи"+
 //                "13) Сделать продажу\n" +
 //                "14) Увидеть все продажи\n"+
 //                "15) Добавит нового пользователя\n"+
-//                "16) Отменить транзацкию\n"+
+//                "16) Отменить транзацкию\n"+ё
         //         17) завершить работу
 
         Scanner sc = new Scanner(System.in);
@@ -200,7 +197,7 @@ public class Admin extends Cashier{
         String position = sc.nextLine();
 
         dbcon.getConnectionToDB();
-        String SQL = String.format("Insert INTO users(FName,LName,Login,Password_,Position) Values(\'%s\',\'%s\',\'%s\',\'%s\',\'%s\');",fname,lname,password,login,position);
+        String SQL = String.format("Insert INTO users(FName,LName,Login,Password_,Position) Values(\'%s\',\'%s\',\'%s\',\'%s\',\'%s\');",fname,lname,login,password,position);
 
         PreparedStatement supplierCreatorDB = dbcon.connection.prepareStatement(SQL);
         supplierCreatorDB.executeUpdate();
@@ -388,7 +385,7 @@ public class Admin extends Cashier{
                     PreparedStatement materialWithSupplierConnector = dbcon.connection.prepareStatement(sqlBasedOnMCBSM);
                     materialWithSupplierConnector.executeUpdate();
                     dbcon.closeConnections();
-                    System.out.println("==================Werkstoffe========================");
+                    System.out.println("==================Werkstoffe=============================");
                     getAllMaterials();
                     System.out.println("===============Mitarbeiter===============================");
                     getAllSuppliers();
@@ -506,6 +503,7 @@ public class Admin extends Cashier{
                         "Geben Sie den Spaltennamen ein, der aktualisiert werden soll: ");
         String colName_for_updating = sc.nextLine();
 
+        Boolean isMaterialExists = false;
         if (colName_for_updating.equals("Name") || colName_for_updating.equals("Marke") || colName_for_updating.equals("Beschreibung")) {
             System.out.print("\n Neuen Wert eingeben: ");
             String nValue_String = sc.nextLine();
@@ -515,16 +513,20 @@ public class Admin extends Cashier{
                 if (m.getName().equals(Name_of_updating_material)) {
                     if(colName_for_updating.equals("Name")) {
                         m.setName(nValue_String);
+                        isMaterialExists = true;
                     }
                     if(colName_for_updating.equals("Marke")){
                         m.setBrand(nValue_String);
+                        isMaterialExists = true;
                     }
                     else if(colName_for_updating.equals("Beschreibung")){
                         m.setDescription(nValue_String);
+                        isMaterialExists = true;
                     }
                 }
-                else{ System.out.println("Kein Material gefunden!"); }
+
             }
+            System.out.println((isMaterialExists)?"Änderungen wurden erfolgreich geschrieben!": "Kein Material gefunden!" );
             sql = String.format("UPDATE materials  SET %s=\'%s\' WHERE Name =\'%s\' ;", colName_for_updating, nValue_String, Name_of_updating_material);
 
 
@@ -534,12 +536,15 @@ public class Admin extends Cashier{
             for (Material m : getLM()) {
                 if (m.getName().equals((Name_of_updating_material))) {
                     m.setQuantity(nValue_int_quantity);
+                    isMaterialExists = true;
                 }
                 else if(colName_for_updating.equals("Menge")){
                     m.setQuantity(nValue_int_quantity);
+                    isMaterialExists = true;
                 }
-                else { m.setPrice(nValue_int_quantity);}
+
             }
+            System.out.println((isMaterialExists)?"Änderungen wurden erfolgreich geschrieben!": "Kein Material gefunden!" );
             sql = String.format("UPDATE materials  SET %s =%d WHERE Name =\'%s\';", colName_for_updating, nValue_int_quantity, Name_of_updating_material);
 
         }
@@ -548,7 +553,6 @@ public class Admin extends Cashier{
         try {
             PreparedStatement preparedStatement = dbcon.connection.prepareStatement(sql);
             int rows = preparedStatement.executeUpdate(sql);
-            System.out.println("Änderungen wurden erfolgreich geschrieben!");
             preparedStatement.close();
 
         }

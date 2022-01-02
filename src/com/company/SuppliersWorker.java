@@ -43,10 +43,10 @@ abstract class SuppliersWorker {
         public void getInfoAboutSup()
         {
             System.out.printf("\nLieferanten-ID: %d\n" +
-                            "Name des Lieferanten: %supplier\n" +
+                            "Name des Lieferanten: %s\n" +
                             "Nachname des Lieferanten: %s\n" +
                             "Lieferantentelefon: %s\n" +
-                            "Lieferantenadresse: %s Lieferant",
+                            "Lieferantenadresse: %s \n",
                     this.SupplierId,this.SupplierName,this.SupplierSurname,this.SupplierPhone,this.SupplierAdress);
         }
         //Setters
@@ -82,6 +82,7 @@ abstract class SuppliersWorker {
     protected void getAllSuppliers(){
         for(Supplier s: LS){
             s.getInfoAboutSup();
+            System.out.println("-------------------------------");
         }
     }
     protected Supplier getSupByID(int id){
@@ -96,15 +97,19 @@ abstract class SuppliersWorker {
         return requiredSup;
     }
      protected void getSupByID(){
+         boolean isSupplierEx = false;
+
          System.out.println("Geben Sie die ID des gewünschten Anbieters ein:");
          int requiredSupId=sc.nextInt();
          for (Supplier s:
                  LS) {
              if(s.getSupplierId()==requiredSupId){
                 s.getInfoAboutSup();
+                isSupplierEx = true;
              }
-             else System.out.println("Leider wurde kein Anbieter mit dieser ID gefunden.");
          }
+         System.out.println((isSupplierEx)?"":"Leider wurde kein Anbieter mit dieser ID gefunden.");
+
 
      }
 }

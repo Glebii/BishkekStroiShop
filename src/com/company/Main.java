@@ -8,8 +8,10 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
-        Admin a = new Admin(1,"John");
-        a.addNewUser();
+//       Admin a = new Admin(1,"kk");
+//       a.makeASale(a);
+//       a.getAllTransactions();
+       runApplication();
 
     }
 
@@ -76,7 +78,7 @@ public class Main {
             System.out.printf("Herzlich willkommen, %s !",administrator.getName());
             administrator.getMenu();
         }
-        else if(position.equals("Cashier")){
+        else if(position.equals("Cashier")||position.equals("Kassierer")){
             Cashier cashier = new Cashier(id,name);
             System.out.printf("Herzlich willkommen, %s !",cashier.getName());
             cashier.getMenu();

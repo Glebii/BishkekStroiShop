@@ -232,6 +232,14 @@ abstract class TransactionWorker extends MaterialWorker{
                 dbcon.getConnectionToDB();
                 dbcon.statement.executeUpdate("DELETE FROM `materials` WHERE Quantity<=0 and idmaterial NOT IN (SELECT materials_idmaterial FROM materials_has_suppliers);");
                 dbcon.closeConnections();
+                dbcon.getConnectionToDB();
+                String SQl = "SELECT * FROM transactions ORDER BY idtransaction DESC LIMIT 1;";
+                ResultSet res = dbcon.statement.executeQuery(SQl);
+                res.beforeFirst();
+                while (res.next()){
+                    createTransaction(res.getInt("idtransaction"),res.getString("Info"),res.getDate("Date").toString(),res.getInt("Quantity"),res.getInt("Total"),res.getInt("CashierIDTransaction"));
+                }
+                dbcon.closeConnections();
                 System.out.printf("Gut, die Transaktion wurde durchgeführt! Ihre Übergabe: %d\n", money - allSumsTogether);
                 allSumsTogether = 0;
                 fullQuantity = 0;
